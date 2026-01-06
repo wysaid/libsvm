@@ -332,12 +332,10 @@ jobs:
 
     - name: Configure CMake
       shell: bash
-      run: |
-        cmake -B ${{github.workspace}}/build \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DLIBSVM_BUILD_JAVA=ON
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release -DLIBSVM_BUILD_JAVA=ON
 
     - name: Build Java bindings
+      shell: bash
       run: cmake --build ${{github.workspace}}/build --target java-bindings
 
     - name: Test Java bindings
@@ -377,12 +375,10 @@ jobs:
 
     - name: Configure CMake
       shell: bash
-      run: |
-        cmake -B ${{github.workspace}}/build \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DLIBSVM_BUILD_EXAMPLES=ON
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release -DLIBSVM_BUILD_EXAMPLES=ON
 
     - name: Build svm-toy
+      shell: bash
       run: cmake --build ${{github.workspace}}/build --target svm-toy
 
     - name: Verify svm-toy binary
