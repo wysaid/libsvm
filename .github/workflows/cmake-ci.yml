@@ -314,9 +314,13 @@ jobs:
       shell: bash
       run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DLIBSVM_BUILD_JAVA=ON
 
-    - name: Build Java bindings
+    - name: Build project
       shell: bash
       run: cmake --build build --config Release
+
+    - name: Build Java bindings explicitly
+      shell: bash
+      run: cmake --build build --config Release --target java-bindings
 
     - name: Verify JAR file
       shell: bash
@@ -325,6 +329,8 @@ jobs:
         ls -la ./build/bindings/java/ || true
         if [ ! -f "./build/bindings/java/libsvm.jar" ]; then
           echo "Error: libsvm.jar not found"
+          echo "Checking build directory structure:"
+          find ./build/bindings/java -type f || true
           exit 1
         fi
         echo "JAR file contents:"
