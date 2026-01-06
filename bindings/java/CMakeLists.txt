@@ -105,8 +105,12 @@ set(JAVA_APP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/svm_toy.java
 )
 
-# Custom target to compile Java and create JAR
-add_custom_target(java-bindings ALL
+# Create the JAR file using add_custom_command with OUTPUT
+# This ensures Visual Studio generator knows there's a file to build
+set(LIBSVM_JAR ${CMAKE_CURRENT_BINARY_DIR}/libsvm.jar)
+
+add_custom_command(
+    OUTPUT ${LIBSVM_JAR}
     DEPENDS generate-svm-java
             ${JAVA_LIBSVM_SOURCES}
             ${JAVA_APP_SOURCES}
@@ -134,18 +138,23 @@ add_custom_target(java-bindings ALL
         ${JAVA_BUILD_DIR}/svm_predict.java
         ${JAVA_BUILD_DIR}/svm_scale.java
         ${JAVA_BUILD_DIR}/svm_toy.java
-    COMMAND ${Java_JAR_EXECUTABLE} cvf ${CMAKE_CURRENT_BINARY_DIR}/libsvm.jar
+    COMMAND ${Java_JAR_EXECUTABLE} cvf ${LIBSVM_JAR}
         -C ${JAVA_BUILD_DIR} .
     WORKING_DIRECTORY ${JAVA_BUILD_DIR}
     COMMENT "Building Java bindings and creating libsvm.jar"
     VERBATIM
 )
 
+# Custom target that depends on the JAR file
+add_custom_target(java-bindings ALL
+    DEPENDS ${LIBSVM_JAR}
+)
+
 # ============================================================================
 # Installation
 # ============================================================================
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libsvm.jar
+install(FILES ${LIBSVM_JAR}
     DESTINATION ${CMAKE_INSTALL_DATADIR}/libsvm/java
 )
 
