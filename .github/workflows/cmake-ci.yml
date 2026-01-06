@@ -53,6 +53,8 @@ jobs:
 
     - name: Configure CMake
       shell: bash
+      env:
+        MSYS2_ARG_CONV_EXCL: "*"
       run: |
         cmake -B ${{github.workspace}}/build \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
@@ -119,6 +121,8 @@ jobs:
 
     - name: Configure CMake with OpenMP
       shell: bash
+      env:
+        MSYS2_ARG_CONV_EXCL: "*"
       run: |
         cmake -B ${{github.workspace}}/build \
           -DCMAKE_BUILD_TYPE=Release \
@@ -150,6 +154,8 @@ jobs:
 
     - name: Configure CMake
       shell: bash
+      env:
+        MSYS2_ARG_CONV_EXCL: "*"
       run: |
         cmake -B ${{github.workspace}}/build \
           -DCMAKE_BUILD_TYPE=Release \
@@ -200,6 +206,8 @@ jobs:
 
     - name: Build shared library
       shell: bash
+      env:
+        MSYS2_ARG_CONV_EXCL: "*"
       run: |
         cmake -B ${{github.workspace}}/build \
           -DCMAKE_BUILD_TYPE=Release \
@@ -279,6 +287,8 @@ jobs:
 
     - name: Configure CMake
       shell: bash
+      env:
+        MSYS2_ARG_CONV_EXCL: "*"
       run: |
         cmake -B ${{github.workspace}}/build \
           -DCMAKE_BUILD_TYPE=Release \
@@ -325,6 +335,8 @@ jobs:
 
     - name: Configure CMake
       shell: bash
+      env:
+        MSYS2_ARG_CONV_EXCL: "*"
       run: |
         cmake -B ${{github.workspace}}/build \
           -DCMAKE_BUILD_TYPE=Release \
@@ -376,6 +388,8 @@ jobs:
 
     - name: Configure CMake
       shell: bash
+      env:
+        MSYS2_ARG_CONV_EXCL: "*"
       run: |
         cmake -B ${{github.workspace}}/build \
           -DCMAKE_BUILD_TYPE=Release \
@@ -401,6 +415,8 @@ jobs:
 
     - name: Test find_package
       shell: bash
+      env:
+        MSYS2_ARG_CONV_EXCL: "*"
       run: |
         mkdir -p ${{github.workspace}}/test_project
         cat > ${{github.workspace}}/test_project/CMakeLists.txt << 'EOF'
@@ -437,6 +453,8 @@ jobs:
 
     - name: Configure CMake with coverage
       shell: bash
+      env:
+        MSYS2_ARG_CONV_EXCL: "*"
       run: |
         cmake -B ${{github.workspace}}/build \
           -DCMAKE_BUILD_TYPE=Debug \
