@@ -330,28 +330,25 @@ jobs:
       if: runner.os == 'Windows'
       shell: bash
       run: |
-        cd build/bindings/java
+        echo "Creating directory structure..."
+        mkdir -p build/bindings/java/java-build/libsvm
+        
         echo "Generating svm.java from svm.m4..."
-        m4 ../../../bindings/java/libsvm/svm.m4 > libsvm/svm.java
+        m4 bindings/java/libsvm/svm.m4 > build/bindings/java/java-build/libsvm/svm.java
         
-        echo "Creating build directory..."
-        mkdir -p java-build/libsvm
-        
-        echo "Copying source files..."
-        cp -r ../../../bindings/java/libsvm/*.java java-build/libsvm/
-        cp libsvm/svm.java java-build/libsvm/
-        cp ../../../bindings/java/*.java java-build/
+        echo "Copying Java source files..."
+        cp bindings/java/libsvm/*.java build/bindings/java/java-build/libsvm/ || true
+        cp bindings/java/*.java build/bindings/java/java-build/
         
         echo "Compiling Java files..."
-        javac -d java-build --release 11 \
-          java-build/libsvm/*.java \
-          java-build/*.java
+        cd build/bindings/java/java-build
+        javac -d . --release 11 libsvm/*.java *.java
         
         echo "Creating JAR file..."
-        jar cvf libsvm.jar -C java-build .
+        jar cvf ../libsvm.jar -C . .
         
         echo "Verifying JAR was created..."
-        ls -lh libsvm.jar
+        ls -lh ../libsvm.jar
 
     - name: Verify JAR file
       shell: bash
