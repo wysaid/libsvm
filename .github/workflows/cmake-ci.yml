@@ -339,56 +339,31 @@ jobs:
 
     - name: Install m4 (Windows)
       if: runner.os == 'Windows'
-      shell: pwsh
+      shell: bash
       run: |
         choco install msys2 -y
-        C:\tools\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm m4"
-        echo "C:\tools\msys64\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        /c/tools/msys64/usr/bin/bash.exe -lc "pacman -S --noconfirm m4"
+        echo "/c/tools/msys64/usr/bin" >> $GITHUB_PATH
 
     - name: Set PATH for m4 (macOS)
       if: runner.os == 'macOS'
       shell: bash
       run: echo "$(brew --prefix m4)/bin" >> $GITHUB_PATH
 
-    - name: Configure CMake (Non-Windows)
-      if: runner.os != 'Windows'
+    - name: Configure CMake
       shell: bash
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release -DLIBSVM_BUILD_JAVA=ON
 
-    - name: Configure CMake (Windows)
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run: |
-        $env:PATH = "C:\tools\msys64\usr\bin;" + $env:PATH
-        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release -DLIBSVM_BUILD_JAVA=ON -DM4_EXECUTABLE=C:/tools/msys64/usr/bin/m4.exe
-
-    - name: Build Java bindings (Non-Windows)
-      if: runner.os != 'Windows'
+    - name: Build Java bindings
       shell: bash
-      run: cmake --build ${{github.workspace}}/build --target java-bindings
+      run: cmake --build ${{github.workspace}}/build --target java-bindings --config Release
 
-    - name: Build Java bindings (Windows)
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run: |
-        $env:PATH = "C:\tools\msys64\usr\bin;" + $env:PATH
-        cmake --build ${{github.workspace}}/build --target java-bindings --config Release
-
-    - name: Test Java bindings (Non-Windows)
-      if: runner.os != 'Windows'
+    - name: Test Java bindings
       shell: bash
       run: |
         java -classpath ${{github.workspace}}/build/bindings/java/libsvm.jar svm_train \
           ${{github.workspace}}/examples/data/heart_scale \
           ${{github.workspace}}/build/heart_scale_java.model
-
-    - name: Test Java bindings (Windows)
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run: |
-        java -classpath "${{github.workspace}}/build/bindings/java/libsvm.jar" svm_train `
-          "${{github.workspace}}/examples/data/heart_scale" `
-          "${{github.workspace}}/build/heart_scale_java.model"
 
   # ============================================================================
   # Qt/svm-toy Example
