@@ -42,6 +42,16 @@ target_link_libraries(svm-toy
 
 target_compile_features(svm-toy PRIVATE cxx_std_11)
 
+# Suppress common warnings for this example
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+    target_compile_options(svm-toy PRIVATE
+        -Wno-sign-conversion
+        -Wno-implicit-int-conversion
+        -Wno-shorten-64-to-32
+        -Wno-deprecated-declarations
+    )
+endif()
+
 # ============================================================================
 # Installation
 # ============================================================================

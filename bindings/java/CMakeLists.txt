@@ -67,13 +67,22 @@ set(SVM_JAVA_GENERATED ${CMAKE_CURRENT_BINARY_DIR}/libsvm/svm.java)
 # Create output directory
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/libsvm)
 
-add_custom_command(
-    OUTPUT ${SVM_JAVA_GENERATED}
-    COMMAND ${M4_EXECUTABLE} ${SVM_JAVA_M4} > ${SVM_JAVA_GENERATED}
-    DEPENDS ${SVM_JAVA_M4}
-    COMMENT "Generating svm.java from svm.m4"
-    VERBATIM
-)
+if(WIN32)
+    add_custom_command(
+        OUTPUT ${SVM_JAVA_GENERATED}
+        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_BINARY_DIR}
+                cmd /c "${M4_EXECUTABLE} ${SVM_JAVA_M4} > libsvm/svm.java"
+        DEPENDS ${SVM_JAVA_M4}
+        COMMENT "Generating svm.java from svm.m4"
+    )
+else()
+    add_custom_command(
+        OUTPUT ${SVM_JAVA_GENERATED}
+        COMMAND /bin/sh -c "${M4_EXECUTABLE} ${SVM_JAVA_M4} > ${SVM_JAVA_GENERATED}"
+        DEPENDS ${SVM_JAVA_M4}
+        COMMENT "Generating svm.java from svm.m4"
+    )
+endif()
 
 add_custom_target(generate-svm-java
     DEPENDS ${SVM_JAVA_GENERATED}
