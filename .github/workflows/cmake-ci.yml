@@ -51,6 +51,7 @@ jobs:
         echo "CXX=${{ matrix.cxx }}" >> $GITHUB_ENV
 
     - name: Configure CMake
+      shell: bash
       run: |
         cmake -B ${{github.workspace}}/build \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
@@ -58,15 +59,18 @@ jobs:
           -DLIBSVM_BUILD_EXAMPLES=OFF
 
     - name: Build
+      shell: bash
       run: cmake --build ${{github.workspace}}/build --config ${{ matrix.build_type }}
 
     - name: Test - svm-train
+      shell: bash
       run: |
         ${{github.workspace}}/build/bin/${{ runner.os == 'Windows' && format('{0}/', matrix.build_type) || '' }}svm-train${{ runner.os == 'Windows' && '.exe' || '' }} \
           ${{github.workspace}}/examples/data/heart_scale \
           ${{github.workspace}}/build/heart_scale.model
 
     - name: Test - svm-predict
+      shell: bash
       run: |
         ${{github.workspace}}/build/bin/${{ runner.os == 'Windows' && format('{0}/', matrix.build_type) || '' }}svm-predict${{ runner.os == 'Windows' && '.exe' || '' }} \
           ${{github.workspace}}/examples/data/heart_scale \
@@ -74,6 +78,7 @@ jobs:
           ${{github.workspace}}/build/heart_scale.output
 
     - name: Test - svm-scale
+      shell: bash
       run: |
         ${{github.workspace}}/build/bin/${{ runner.os == 'Windows' && format('{0}/', matrix.build_type) || '' }}svm-scale${{ runner.os == 'Windows' && '.exe' || '' }} \
           -l -1 -u 1 \
@@ -108,9 +113,11 @@ jobs:
 
     - name: Install OpenMP (macOS)
       if: runner.os == 'macOS'
+      shell: bash
       run: brew install libomp
 
     - name: Configure CMake with OpenMP
+      shell: bash
       run: |
         cmake -B ${{github.workspace}}/build \
           -DCMAKE_BUILD_TYPE=Release \
@@ -118,9 +125,11 @@ jobs:
           -DLIBSVM_BUILD_APPS=ON
 
     - name: Build
+      shell: bash
       run: cmake --build ${{github.workspace}}/build --config Release
 
     - name: Test with OpenMP
+      shell: bash
       run: |
         ${{github.workspace}}/build/bin/svm-train \
           ${{github.workspace}}/examples/data/heart_scale
@@ -147,6 +156,7 @@ jobs:
           -DLIBSVM_BUILD_APPS=ON
 
     - name: Build
+      shell: bash
       run: cmake --build ${{github.workspace}}/build --config Release
 
     - name: Verify shared library
@@ -182,11 +192,13 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Install Python dependencies
+      shell: bash
       run: |
         python -m pip install --upgrade pip
         pip install numpy scipy
 
     - name: Build shared library
+      shell: bash
       run: |
         cmake -B ${{github.workspace}}/build \
           -DCMAKE_BUILD_TYPE=Release \
@@ -256,19 +268,23 @@ jobs:
 
     - name: Install m4 (macOS)
       if: runner.os == 'macOS'
+      shell: bash
       run: brew install m4
 
     - name: Install m4 (Windows)
       if: runner.os == 'Windows'
+      shell: bash
       run: choco install m4
 
     - name: Configure CMake
+      shell: bash
       run: |
         cmake -B ${{github.workspace}}/build \
           -DCMAKE_BUILD_TYPE=Release \
           -DLIBSVM_BUILD_JAVA=ON
 
     - name: Build Java bindings
+      shell: bash
       run: cmake --build ${{github.workspace}}/build --target java-bindings
 
     - name: Test Java bindings
@@ -294,26 +310,31 @@ jobs:
 
     - name: Install Qt (Linux)
       if: runner.os == 'Linux'
+      shell: bash
       run: |
         sudo apt-get update
         sudo apt-get install -y qtbase5-dev qtbase5-dev-tools
 
     - name: Install Qt (macOS)
       if: runner.os == 'macOS'
+      shell: bash
       run: |
         brew install qt@5
         echo "CMAKE_PREFIX_PATH=$(brew --prefix qt@5)" >> $GITHUB_ENV
 
     - name: Configure CMake
+      shell: bash
       run: |
         cmake -B ${{github.workspace}}/build \
           -DCMAKE_BUILD_TYPE=Release \
           -DLIBSVM_BUILD_EXAMPLES=ON
 
     - name: Build svm-toy
+      shell: bash
       run: cmake --build ${{github.workspace}}/build --target svm-toy
 
     - name: Verify svm-toy binary
+      shell: bash
       run: test -f ${{github.workspace}}/build/bin/svm-toy
 
   # ============================================================================
@@ -327,10 +348,12 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Install cppcheck
+      shell: bash
       run: sudo apt-get update && sudo apt-get install -y cppcheck
 
     - name: Run cppcheck
       continue-on-error: true
+      shell: bash
       run: |
         cppcheck --enable=warning,performance,portability \
           --suppress=missingIncludeSystem \
@@ -351,6 +374,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Configure CMake
+      shell: bash
       run: |
         cmake -B ${{github.workspace}}/build \
           -DCMAKE_BUILD_TYPE=Release \
@@ -358,12 +382,15 @@ jobs:
           -DLIBSVM_BUILD_APPS=ON
 
     - name: Build
+      shell: bash
       run: cmake --build ${{github.workspace}}/build
 
     - name: Install
+      shell: bash
       run: cmake --install ${{github.workspace}}/build
 
     - name: Verify installation
+      shell: bash
       run: |
         test -f ${{github.workspace}}/install/include/svm.h
         test -f ${{github.workspace}}/install/bin/svm-train
@@ -372,6 +399,7 @@ jobs:
         echo "Installation verification successful"
 
     - name: Test find_package
+      shell: bash
       run: |
         mkdir -p ${{github.workspace}}/test_project
         cat > ${{github.workspace}}/test_project/CMakeLists.txt << 'EOF'
@@ -401,11 +429,13 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Install dependencies
+      shell: bash
       run: |
         sudo apt-get update
         sudo apt-get install -y lcov
 
     - name: Configure CMake with coverage
+      shell: bash
       run: |
         cmake -B ${{github.workspace}}/build \
           -DCMAKE_BUILD_TYPE=Debug \
@@ -414,9 +444,11 @@ jobs:
           -DLIBSVM_BUILD_APPS=ON
 
     - name: Build
+      shell: bash
       run: cmake --build ${{github.workspace}}/build
 
     - name: Run tests
+      shell: bash
       run: |
         ${{github.workspace}}/build/bin/svm-train \
           ${{github.workspace}}/examples/data/heart_scale \
@@ -427,6 +459,7 @@ jobs:
           ${{github.workspace}}/build/heart_scale.output
 
     - name: Generate coverage report
+      shell: bash
       run: |
         lcov --capture --directory ${{github.workspace}}/build \
           --output-file coverage.info
