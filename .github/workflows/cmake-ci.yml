@@ -316,7 +316,7 @@ jobs:
 
     - name: Build Java bindings
       shell: bash
-      run: cmake --build build --config Release --target java-bindings
+      run: cmake --build build --config Release
 
     - name: Test Java bindings
       shell: bash
