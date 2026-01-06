@@ -1,0 +1,554 @@
+name: CMake CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+env:
+  BUILD_TYPE: Release
+  MSYS_NO_PATHCONV: 1  # Prevent Git Bash path conversion on Windows
+
+jobs:
+  # ============================================================================
+  # Core Library Build and Test
+  # ============================================================================
+  build-and-test:
+    name: ${{ matrix.os }} - ${{ matrix.compiler }} - ${{ matrix.build_type }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        compiler: [default]
+        build_type: [Release, Debug]
+        include:
+          # Test with GCC on Linux
+          - os: ubuntu-latest
+            compiler: gcc
+            build_type: Release
+            cc: gcc-13
+            cxx: g++-13
+          # Test with Clang on Linux
+          - os: ubuntu-latest
+            compiler: clang
+            build_type: Release
+            cc: clang-18
+            cxx: clang++-18
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup compiler (Linux)
+      if: runner.os == 'Linux' && matrix.compiler != 'default'
+      run: |
+        if [ "${{ matrix.compiler }}" == "gcc" ]; then
+          sudo apt-get update
+          sudo apt-get install -y gcc-13 g++-13
+        elif [ "${{ matrix.compiler }}" == "clang" ]; then
+          sudo apt-get update
+          sudo apt-get install -y clang-18
+        fi
+        echo "CC=${{ matrix.cc }}" >> $GITHUB_ENV
+        echo "CXX=${{ matrix.cxx }}" >> $GITHUB_ENV
+
+    - name: Configure CMake
+      shell: bash
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DLIBSVM_BUILD_APPS=ON \
+          -DLIBSVM_BUILD_EXAMPLES=OFF
+
+    - name: Build
+      shell: bash
+      run: cmake --build build --config ${{ matrix.build_type }}
+
+    - name: Test - svm-train
+      shell: bash
+      run: |
+        if [ "${{ runner.os }}" == "Windows" ]; then
+          ./build/bin/${{ matrix.build_type }}/svm-train.exe \
+            ./examples/data/heart_scale \
+            ./build/heart_scale.model
+        else
+          ./build/bin/svm-train \
+            ./examples/data/heart_scale \
+            ./build/heart_scale.model
+        fi
+
+    - name: Test - svm-predict
+      shell: bash
+      run: |
+        if [ "${{ runner.os }}" == "Windows" ]; then
+          ./build/bin/${{ matrix.build_type }}/svm-predict.exe \
+            ./examples/data/heart_scale \
+            ./build/heart_scale.model \
+            ./build/heart_scale.output
+        else
+          ./build/bin/svm-predict \
+            ./examples/data/heart_scale \
+            ./build/heart_scale.model \
+            ./build/heart_scale.output
+        fi
+
+    - name: Test - svm-scale
+      shell: bash
+      run: |
+        if [ "${{ runner.os }}" == "Windows" ]; then
+          ./build/bin/${{ matrix.build_type }}/svm-scale.exe \
+            -l -1 -u 1 \
+            ./examples/data/heart_scale \
+            > ./build/heart_scale.scaled
+        else
+          ./build/bin/svm-scale \
+            -l -1 -u 1 \
+            ./examples/data/heart_scale \
+            > ./build/heart_scale.scaled
+        fi
+
+    - name: Verify outputs
+      shell: bash
+      run: |
+        if [ ! -f "./build/heart_scale.model" ]; then
+          echo "Error: Model file not created"
+          exit 1
+        fi
+        if [ ! -f "./build/heart_scale.output" ]; then
+          echo "Error: Prediction output not created"
+          exit 1
+        fi
+        echo "All output files created successfully"
+
+  # ============================================================================
+  # Build with OpenMP
+  # ============================================================================
+  build-with-openmp:
+    name: OpenMP - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install OpenMP (macOS)
+      if: runner.os == 'macOS'
+      shell: bash
+      run: brew install libomp
+
+    - name: Configure CMake with OpenMP
+      shell: bash
+      env:
+        MSYS2_ARG_CONV_EXCL: "*"
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DLIBSVM_ENABLE_OPENMP=ON \
+          -DLIBSVM_BUILD_APPS=ON
+
+    - name: Build
+      shell: bash
+      run: cmake --build build --config Release
+
+    - name: Test with OpenMP
+      shell: bash
+      run: |
+        ./build/bin/svm-train \
+          ./examples/data/heart_scale
+
+  # ============================================================================
+  # Shared Library Build
+  # ============================================================================
+  build-shared-library:
+    name: Shared Library - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure CMake
+      shell: bash
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_SHARED_LIBS=ON \
+          -DLIBSVM_BUILD_APPS=ON
+
+    - name: Build
+      shell: bash
+      run: cmake --build build --config Release
+
+    - name: Verify shared library
+      shell: bash
+      run: |
+        if [ "${{ runner.os }}" == "macOS" ]; then
+          test -f "./build/lib/libsvm.dylib" || exit 1
+        elif [ "${{ runner.os }}" == "Windows" ]; then
+          test -f "./build/bin/Release/svm.dll" || \
+          test -f "./build/bin/svm.dll" || exit 1
+        else
+          test -f "./build/lib/libsvm.so" || exit 1
+        fi
+        echo "Shared library built successfully"
+
+  # ============================================================================
+  # Python Bindings
+  # ============================================================================
+  test-python-bindings:
+    name: Python ${{ matrix.python-version }} - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.9', '3.11', '3.13']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Python dependencies
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy scipy
+
+    - name: Build shared library
+      shell: bash
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_SHARED_LIBS=ON \
+          -DLIBSVM_BUILD_PYTHON=ON
+        cmake --build build --config Release
+
+    - name: Copy library to Python package
+      shell: bash
+      run: |
+        if [ "${{ runner.os }}" == "macOS" ]; then
+          cp ./build/lib/libsvm*.dylib ./bindings/python/libsvm/ 2>/dev/null || \
+          cp ./build/lib/libsvm.dylib ./bindings/python/libsvm/
+        elif [ "${{ runner.os }}" == "Windows" ]; then
+          cp ./build/bin/Release/svm.dll ./bindings/python/libsvm/ 2>/dev/null || \
+          cp ./build/bin/svm.dll ./bindings/python/libsvm/ || { echo "svm.dll not found"; exit 1; }
+        else
+          cp ./build/lib/libsvm.so* ./bindings/python/libsvm/ 2>/dev/null || \
+          cp ./build/lib/libsvm.so ./bindings/python/libsvm/
+        fi
+
+    - name: Test Python import
+      shell: bash
+      run: |
+        cd ./bindings/python
+        python -c "from libsvm import svmutil; print('Python bindings import successful')"
+
+    - name: Test Python training
+      shell: bash
+      run: |
+        cd ./bindings/python
+        python -c "
+        from libsvm import svmutil
+        import sys
+        sys.path.insert(0, '.')
+        y, x = svmutil.svm_read_problem('../../examples/data/heart_scale')
+        prob = svmutil.svm_problem(y[:200], x[:200])
+        param = svmutil.svm_parameter('-q')
+        model = svmutil.svm_train(prob, param)
+        print('Python training test successful')
+        "
+
+  # ============================================================================
+  # Java Bindings
+  # ============================================================================
+  test-java-bindings:
+    name: Java ${{ matrix.java-version }} - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        java-version: ['11', '17', '21']
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: ${{ matrix.java-version }}
+
+    - name: Install m4 (Linux)
+      if: runner.os == 'Linux'
+      shell: bash
+      run: sudo apt-get update && sudo apt-get install -y m4
+
+    - name: Install m4 (macOS)
+      if: runner.os == 'macOS'
+      shell: bash
+      run: brew install m4
+
+    - name: Install m4 (Windows)
+      if: runner.os == 'Windows'
+      shell: bash
+      run: |
+        choco install msys2 -y --no-progress
+        /c/tools/msys64/usr/bin/bash.exe -lc "pacman -S --noconfirm m4"
+        echo "/c/tools/msys64/usr/bin" >> $GITHUB_PATH
+        echo "M4 installed, verifying..."
+        /c/tools/msys64/usr/bin/m4 --version | head -1
+
+    - name: Set PATH for m4 (macOS)
+      if: runner.os == 'macOS'
+      shell: bash
+      run: echo "$(brew --prefix m4)/bin" >> $GITHUB_PATH
+
+    - name: Verify m4 is available
+      shell: bash
+      run: |
+        which m4 || echo "m4 not in PATH"
+        m4 --version | head -1
+
+    - name: Configure CMake
+      shell: bash
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DLIBSVM_BUILD_JAVA=ON
+
+    - name: Build
+      shell: bash
+      run: cmake --build build --config Release
+
+    - name: Build Java bindings manually (Windows workaround)
+      if: runner.os == 'Windows'
+      shell: bash
+      run: |
+        echo "Creating directory structure..."
+        mkdir -p build/bindings/java/java-build/libsvm
+        
+        echo "Generating svm.java from svm.m4..."
+        m4 bindings/java/libsvm/svm.m4 > build/bindings/java/java-build/libsvm/svm.java
+        
+        echo "Copying Java source files..."
+        cp bindings/java/libsvm/*.java build/bindings/java/java-build/libsvm/ || true
+        cp bindings/java/*.java build/bindings/java/java-build/
+        
+        echo "Compiling Java files..."
+        cd build/bindings/java/java-build
+        javac -d . --release 11 libsvm/*.java *.java
+        
+        echo "Creating JAR file..."
+        jar cvf ../libsvm.jar -C . .
+        
+        echo "Verifying JAR was created..."
+        ls -lh ../libsvm.jar
+
+    - name: Verify JAR file
+      shell: bash
+      run: |
+        echo "Checking for JAR file..."
+        ls -la ./build/bindings/java/ || true
+        if [ ! -f "./build/bindings/java/libsvm.jar" ]; then
+          echo "Error: libsvm.jar not found"
+          echo "Checking build directory structure:"
+          find ./build/bindings/java -type f || true
+          exit 1
+        fi
+        echo "JAR file contents:"
+        jar tf ./build/bindings/java/libsvm.jar | head -20
+
+    - name: Test Java bindings
+      shell: bash
+      run: |
+        java -classpath ./build/bindings/java/libsvm.jar svm_train \
+          ./examples/data/heart_scale \
+          ./build/heart_scale_java.model
+
+  # ============================================================================
+  # Qt/svm-toy Example
+  # ============================================================================
+  test-qt-example:
+    name: Qt Example - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        # Skip Windows due to Qt installation complexity
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Qt (Linux)
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y qtbase5-dev qtbase5-dev-tools
+
+    - name: Install Qt (macOS)
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        brew install qt@5
+        echo "CMAKE_PREFIX_PATH=$(brew --prefix qt@5)" >> $GITHUB_ENV
+
+    - name: Configure CMake
+      shell: bash
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DLIBSVM_BUILD_EXAMPLES=ON
+
+    - name: Build svm-toy
+      shell: bash
+      run: cmake --build build --target svm-toy
+
+    - name: Verify svm-toy binary
+      shell: bash
+      run: test -f ./build/bin/svm-toy
+
+  # ============================================================================
+  # Static Analysis
+  # ============================================================================
+  static-analysis:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install cppcheck
+      shell: bash
+      run: sudo apt-get update && sudo apt-get install -y cppcheck
+
+    - name: Run cppcheck
+      continue-on-error: true
+      shell: bash
+      run: |
+        cppcheck --enable=warning,performance,portability \
+          --suppress=missingIncludeSystem \
+          --error-exitcode=1 \
+          src/ apps/ examples/svm-toy/
+
+  # ============================================================================
+  # Installation Test
+  # ============================================================================
+  test-installation:
+    name: Installation Test - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure CMake
+      shell: bash
+      env:
+        MSYS2_ARG_CONV_EXCL: "*"
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX=./install \
+          -DLIBSVM_BUILD_APPS=ON
+
+    - name: Build
+      shell: bash
+      run: cmake --build build
+
+    - name: Install
+      shell: bash
+      run: cmake --install build
+
+    - name: Verify installation
+      shell: bash
+      run: |
+        test -f ./install/include/svm.h
+        test -f ./install/bin/svm-train
+        test -f ./install/bin/svm-predict
+        test -f ./install/bin/svm-scale
+        echo "Installation verification successful"
+
+    - name: Test find_package
+      shell: bash
+      env:
+        MSYS2_ARG_CONV_EXCL: "*"
+      run: |
+        mkdir -p test_project
+        cat > test_project/CMakeLists.txt << 'EOF'
+        cmake_minimum_required(VERSION 3.16)
+        project(TestLibSVM)
+        find_package(LibSVM REQUIRED)
+        add_executable(test_app test.cpp)
+        target_link_libraries(test_app LibSVM::svm)
+        EOF
+        cat > test_project/test.cpp << 'EOF'
+        #include <svm.h>
+        int main() { return 0; }
+        EOF
+        cmake -B test_project/build \
+          -S test_project \
+          -DCMAKE_PREFIX_PATH="$(pwd)/install"
+        cmake --build test_project/build
+
+  # ============================================================================
+  # Code Coverage (Linux only)
+  # ============================================================================
+  code-coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y lcov
+
+    - name: Configure CMake with coverage
+      shell: bash
+      env:
+        MSYS2_ARG_CONV_EXCL: "*"
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DCMAKE_CXX_FLAGS="--coverage" \
+          -DCMAKE_C_FLAGS="--coverage" \
+          -DLIBSVM_BUILD_APPS=ON
+
+    - name: Build
+      shell: bash
+      run: cmake --build build
+
+    - name: Run tests
+      shell: bash
+      run: |
+        ./build/bin/svm-train \
+          ./examples/data/heart_scale \
+          ./build/heart_scale.model
+        ./build/bin/svm-predict \
+          ./examples/data/heart_scale \
+          ./build/heart_scale.model \
+          ./build/heart_scale.output
+
+    - name: Generate coverage report
+      shell: bash
+      run: |
+        lcov --capture --directory ./build \
+          --output-file coverage.info
+        lcov --remove coverage.info '/usr/*' '*/test/*' \
+          --output-file coverage.info --ignore-errors unused
+        lcov --list coverage.info
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v5
+      continue-on-error: true
+      with:
+        files: ./coverage.info
