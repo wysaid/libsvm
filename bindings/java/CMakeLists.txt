@@ -124,12 +124,21 @@ add_custom_target(java-bindings ALL
         ${JAVA_BUILD_DIR}/
     COMMAND ${Java_JAVAC_EXECUTABLE} -d ${JAVA_BUILD_DIR}
         --release 11
-        ${JAVA_BUILD_DIR}/libsvm/*.java
-        ${JAVA_BUILD_DIR}/*.java
+        ${JAVA_BUILD_DIR}/libsvm/svm.java
+        ${JAVA_BUILD_DIR}/libsvm/svm_model.java
+        ${JAVA_BUILD_DIR}/libsvm/svm_node.java
+        ${JAVA_BUILD_DIR}/libsvm/svm_parameter.java
+        ${JAVA_BUILD_DIR}/libsvm/svm_print_interface.java
+        ${JAVA_BUILD_DIR}/libsvm/svm_problem.java
+        ${JAVA_BUILD_DIR}/svm_train.java
+        ${JAVA_BUILD_DIR}/svm_predict.java
+        ${JAVA_BUILD_DIR}/svm_scale.java
+        ${JAVA_BUILD_DIR}/svm_toy.java
     COMMAND ${Java_JAR_EXECUTABLE} cvf ${CMAKE_CURRENT_BINARY_DIR}/libsvm.jar
         -C ${JAVA_BUILD_DIR} .
     WORKING_DIRECTORY ${JAVA_BUILD_DIR}
     COMMENT "Building Java bindings and creating libsvm.jar"
+    VERBATIM
 )
 
 # ============================================================================

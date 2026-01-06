@@ -314,13 +314,9 @@ jobs:
       shell: bash
       run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DLIBSVM_BUILD_JAVA=ON
 
-    - name: Build project
+    - name: Build
       shell: bash
       run: cmake --build build --config Release
-
-    - name: Build Java bindings explicitly
-      shell: bash
-      run: cmake --build build --config Release --target java-bindings
 
     - name: Verify JAR file
       shell: bash
