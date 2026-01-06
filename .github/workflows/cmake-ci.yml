@@ -335,6 +335,11 @@ jobs:
       shell: bash
       run: choco install m4
 
+    - name: Set PATH for m4 (macOS)
+      if: runner.os == 'macOS'
+      shell: bash
+      run: echo "$(brew --prefix m4)/bin" >> $GITHUB_PATH
+
     - name: Configure CMake
       shell: bash
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release -DLIBSVM_BUILD_JAVA=ON
