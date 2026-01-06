@@ -8,6 +8,20 @@ LibSVM is a simple, easy-to-use, and efficient software for SVM classification a
 
 Please read the [COPYRIGHT](COPYRIGHT) file before using LibSVM.
 
+## About This Fork
+
+This is a modernized fork of LibSVM with the following improvements:
+
+- **CMake Build System**: Replaced traditional Makefiles with modern CMake (3.16+) for better cross-platform support
+- **Reorganized Structure**: Cleaner directory layout with `src/`, `apps/`, `bindings/`, and `examples/`
+- **Unified Language Bindings**: CMake-based build configuration for Python, Java, and MATLAB bindings
+- **Removed Precompiled Binaries**: All binaries are now built from source for better security and compatibility
+- **Modern Documentation**: Updated to Markdown format with comprehensive build instructions
+
+For the original build instructions using Makefile, see [README.original](README.original).
+
+For development logs and migration details, see [docs/DEV_LOG.md](docs/DEV_LOG.md).
+
 ## Table of Contents
 
 - [Quick Start](#quick-start)

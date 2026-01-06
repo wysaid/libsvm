@@ -1,8 +1,34 @@
-# LibSVM 项目现代化改造方案
+# LibSVM Development Log
 
-**创建日期**: 2026-01-06  
-**项目版本**: LIBSVM 3.37  
-**文档版本**: v1.0
+This document records major changes and developments from the original libsvm codebase.
+
+---
+
+## 2026-01-06: Documentation Reorganization
+
+### Changes
+- **Renamed original README**: `README` → `README.original` to preserve original documentation
+- **Primary documentation**: `README.md` now serves as the main documentation in modern Markdown format
+- **Added fork context**: Added "About This Fork" section to clearly indicate modernization changes
+- **Created DEV_LOG.md**: This file to track development history and major changes
+
+### Rationale
+- Modern projects expect Markdown documentation (`.md` files)
+- GitHub displays `README.md` with better formatting
+- Preserving original documentation maintains historical reference
+- Clear separation helps users distinguish between original and fork-specific features
+
+### Files Affected
+- `README` → `README.original` (renamed)
+- `README.md` (updated with fork information)
+- `docs/DEV_LOG.md` (this file, updated structure)
+
+---
+
+## 2026-01-06: CMake Migration Project
+
+**Project Version**: LIBSVM 3.37  
+**Migration Document Version**: v1.0
 
 ---
 
