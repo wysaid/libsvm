@@ -52,9 +52,6 @@ jobs:
         echo "CXX=${{ matrix.cxx }}" >> $GITHUB_ENV
 
     - name: Configure CMake
-      shell: bash
-      env:
-        MSYS2_ARG_CONV_EXCL: "*"
       run: |
         cmake -B ${{github.workspace}}/build \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
@@ -62,33 +59,59 @@ jobs:
           -DLIBSVM_BUILD_EXAMPLES=OFF
 
     - name: Build
-      shell: bash
       run: cmake --build ${{github.workspace}}/build --config ${{ matrix.build_type }}
 
-    - name: Test - svm-train
+    - name: Test - svm-train (Non-Windows)
+      if: runner.os != 'Windows'
       shell: bash
       run: |
-        ${{github.workspace}}/build/bin/${{ runner.os == 'Windows' && format('{0}/', matrix.build_type) || '' }}svm-train${{ runner.os == 'Windows' && '.exe' || '' }} \
+        ${{github.workspace}}/build/bin/svm-train \
           ${{github.workspace}}/examples/data/heart_scale \
           ${{github.workspace}}/build/heart_scale.model
 
-    - name: Test - svm-predict
+    - name: Test - svm-train (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        & "${{github.workspace}}/build/bin/${{ matrix.build_type }}/svm-train.exe" `
+          "${{github.workspace}}/examples/data/heart_scale" `
+          "${{github.workspace}}/build/heart_scale.model"
+
+    - name: Test - svm-predict (Non-Windows)
+      if: runner.os != 'Windows'
       shell: bash
       run: |
-        ${{github.workspace}}/build/bin/${{ runner.os == 'Windows' && format('{0}/', matrix.build_type) || '' }}svm-predict${{ runner.os == 'Windows' && '.exe' || '' }} \
+        ${{github.workspace}}/build/bin/svm-predict \
           ${{github.workspace}}/examples/data/heart_scale \
           ${{github.workspace}}/build/heart_scale.model \
           ${{github.workspace}}/build/heart_scale.output
 
-    - name: Test - svm-scale
+    - name: Test - svm-predict (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        & "${{github.workspace}}/build/bin/${{ matrix.build_type }}/svm-predict.exe" `
+          "${{github.workspace}}/examples/data/heart_scale" `
+          "${{github.workspace}}/build/heart_scale.model" `
+          "${{github.workspace}}/build/heart_scale.output"
+
+    - name: Test - svm-scale (Non-Windows)
+      if: runner.os != 'Windows'
       shell: bash
       run: |
-        ${{github.workspace}}/build/bin/${{ runner.os == 'Windows' && format('{0}/', matrix.build_type) || '' }}svm-scale${{ runner.os == 'Windows' && '.exe' || '' }} \
+        ${{github.workspace}}/build/bin/svm-scale \
           -l -1 -u 1 \
           ${{github.workspace}}/examples/data/heart_scale \
           > ${{github.workspace}}/build/heart_scale.scaled
 
-    - name: Verify outputs
+    - name: Test - svm-scale (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        & "${{github.workspace}}/build/bin/${{ matrix.build_type }}/svm-scale.exe" `
+          -l -1 -u 1 `
+          "${{github.workspace}}/examples/data/heart_scale" `
+          | Out-File -FilePath "${{github.workspace}}/build/heart_scale.scaled"
+
+    - name: Verify outputs (Non-Windows)
+      if: runner.os != 'Windows'
       shell: bash
       run: |
         if [ ! -f "${{github.workspace}}/build/heart_scale.model" ]; then
@@ -100,6 +123,19 @@ jobs:
           exit 1
         fi
         echo "All output files created successfully"
+
+    - name: Verify outputs (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        if (!(Test-Path "${{github.workspace}}/build/heart_scale.model")) {
+          Write-Error "Error: Model file not created"
+          exit 1
+        }
+        if (!(Test-Path "${{github.workspace}}/build/heart_scale.output")) {
+          Write-Error "Error: Prediction output not created"
+          exit 1
+        }
+        Write-Host "All output files created successfully"
 
   # ============================================================================
   # Build with OpenMP
@@ -153,9 +189,6 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Configure CMake
-      shell: bash
-      env:
-        MSYS2_ARG_CONV_EXCL: "*"
       run: |
         cmake -B ${{github.workspace}}/build \
           -DCMAKE_BUILD_TYPE=Release \
@@ -163,21 +196,30 @@ jobs:
           -DLIBSVM_BUILD_APPS=ON
 
     - name: Build
-      shell: bash
       run: cmake --build ${{github.workspace}}/build --config Release
 
-    - name: Verify shared library
+    - name: Verify shared library (Non-Windows)
+      if: runner.os != 'Windows'
       shell: bash
       run: |
-        if [ "${{ runner.os }}" == "Windows" ]; then
-          test -f "${{github.workspace}}/build/bin/Release/svm.dll" || \
-          test -f "${{github.workspace}}/build/bin/svm.dll" || exit 1
-        elif [ "${{ runner.os }}" == "macOS" ]; then
+        if [ "${{ runner.os }}" == "macOS" ]; then
           test -f "${{github.workspace}}/build/lib/libsvm.dylib" || exit 1
         else
           test -f "${{github.workspace}}/build/lib/libsvm.so" || exit 1
         fi
         echo "Shared library built successfully"
+
+    - name: Verify shared library (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        if (Test-Path "${{github.workspace}}/build/bin/Release/svm.dll") {
+          Write-Host "Shared library built successfully"
+        } elseif (Test-Path "${{github.workspace}}/build/bin/svm.dll") {
+          Write-Host "Shared library built successfully"
+        } else {
+          Write-Error "Shared library not found"
+          exit 1
+        }
 
   # ============================================================================
   # Python Bindings
@@ -205,13 +247,10 @@ jobs:
         pip install numpy scipy
 
     - name: Build shared library
-      shell: bash
-      env:
-        MSYS2_ARG_CONV_EXCL: "*"
       run: |
-        cmake -B ${{github.workspace}}/build \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DBUILD_SHARED_LIBS=ON \
+        cmake -B ${{github.workspace}}/build `
+          -DCMAKE_BUILD_TYPE=Release `
+          -DBUILD_SHARED_LIBS=ON `
           -DLIBSVM_BUILD_PYTHON=ON
         cmake --build ${{github.workspace}}/build --config Release
 
@@ -229,10 +268,15 @@ jobs:
 
     - name: Copy library to Python package (Windows)
       if: runner.os == 'Windows'
-      shell: bash
       run: |
-        cp ${{github.workspace}}/build/bin/Release/svm.dll ${{github.workspace}}/bindings/python/libsvm/ 2>/dev/null || \
-        cp ${{github.workspace}}/build/bin/svm.dll ${{github.workspace}}/bindings/python/libsvm/
+        if (Test-Path "${{github.workspace}}/build/bin/Release/svm.dll") {
+          Copy-Item "${{github.workspace}}/build/bin/Release/svm.dll" "${{github.workspace}}/bindings/python/libsvm/"
+        } elseif (Test-Path "${{github.workspace}}/build/bin/svm.dll") {
+          Copy-Item "${{github.workspace}}/build/bin/svm.dll" "${{github.workspace}}/bindings/python/libsvm/"
+        } else {
+          Write-Error "svm.dll not found"
+          exit 1
+        }
 
     - name: Test Python import
       shell: bash
@@ -286,16 +330,12 @@ jobs:
       run: choco install m4
 
     - name: Configure CMake
-      shell: bash
-      env:
-        MSYS2_ARG_CONV_EXCL: "*"
       run: |
-        cmake -B ${{github.workspace}}/build \
-          -DCMAKE_BUILD_TYPE=Release \
+        cmake -B ${{github.workspace}}/build `
+          -DCMAKE_BUILD_TYPE=Release `
           -DLIBSVM_BUILD_JAVA=ON
 
     - name: Build Java bindings
-      shell: bash
       run: cmake --build ${{github.workspace}}/build --target java-bindings
 
     - name: Test Java bindings
@@ -334,16 +374,12 @@ jobs:
         echo "CMAKE_PREFIX_PATH=$(brew --prefix qt@5)" >> $GITHUB_ENV
 
     - name: Configure CMake
-      shell: bash
-      env:
-        MSYS2_ARG_CONV_EXCL: "*"
       run: |
-        cmake -B ${{github.workspace}}/build \
-          -DCMAKE_BUILD_TYPE=Release \
+        cmake -B ${{github.workspace}}/build `
+          -DCMAKE_BUILD_TYPE=Release `
           -DLIBSVM_BUILD_EXAMPLES=ON
 
     - name: Build svm-toy
-      shell: bash
       run: cmake --build ${{github.workspace}}/build --target svm-toy
 
     - name: Verify svm-toy binary

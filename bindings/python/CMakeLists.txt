@@ -47,12 +47,14 @@ if(LIBSVM_PYTHON_COPY_LIB AND BUILD_SHARED_LIBS)
         set(LIBSVM_SHARED_LIB_NAME "libsvm.so.${PROJECT_VERSION_MAJOR}")
     endif()
     
-    # Copy library after build
-    add_custom_command(
-        TARGET svm POST_BUILD
+    # Create a custom target to copy library after build
+    # Using custom target instead of add_custom_command(TARGET svm...) 
+    # to avoid cross-directory dependency issues
+    add_custom_target(copy-lib-to-python ALL
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            $<TARGET_FILE:svm>
+            $<TARGET_FILE:LibSVM::svm>
             ${CMAKE_CURRENT_SOURCE_DIR}/libsvm/
+        DEPENDS LibSVM::svm
         COMMENT "Copying libsvm to Python package directory"
     )
 endif()
