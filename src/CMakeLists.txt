@@ -20,7 +20,7 @@ add_library(LibSVM::svm ALIAS svm)
 target_include_directories(svm
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+        $<INSTALL_INTERFACE:include>
 )
 
 # Set library version
