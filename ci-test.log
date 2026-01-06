@@ -1,0 +1,1567 @@
+==========================================
+LibSVM Ubuntu CI Simulation
+==========================================
+
+
+==========================================
+Job 1: Build and Test (Default Compiler)
+==========================================
+[1;33m→ Cleaning up build directories...[0m
+[1;33m→ Testing with BUILD_TYPE=Release[0m
+[1;33m→ Configuring CMake...[0m
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/lib/ccache/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/lib/ccache/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring LibSVM version 3.37
+-- 
+-- LibSVM 3.37 Configuration Summary:
+--   Build type:        Release
+--   Shared library:    ON
+--   OpenMP:            OFF
+--   Build apps:        ON
+--   Build examples:    OFF
+--   Python bindings:   OFF
+--   Java bindings:     OFF
+--   MATLAB bindings:   OFF
+-- 
+-- Configuring done (0.4s)
+-- Generating done (0.0s)
+-- Build files have been written to: /workspace/libsvm/build
+[1;33m→ Building...[0m
+[ 12%] Building CXX object src/CMakeFiles/svm.dir/svm.cpp.o
+[ 25%] Linking CXX shared library ../lib/libsvm.so
+[ 25%] Built target svm
+[ 37%] Building C object apps/CMakeFiles/svm-train.dir/svm-train.c.o
+/workspace/libsvm/apps/svm-train.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-train.c:75:46: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   75 |                 line = (char *) realloc(line,max_line_len);
+      |                                              ^~~~~~~~~~~~
+/workspace/libsvm/apps/svm-train.c: In function ‘do_cross_validation’:
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:128:26: note: in expansion of macro ‘Malloc’
+  128 |         double *target = Malloc(double,prob.l);
+      |                          ^~~~~~
+/workspace/libsvm/apps/svm-train.c: In function ‘parse_command_line’:
+/workspace/libsvm/apps/svm-train.c:243:99: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  243 |                                 param.weight_label = (int *)realloc(param.weight_label,sizeof(int)*param.nr_weight);
+      |                                                                                                   ^
+/workspace/libsvm/apps/svm-train.c:244:93: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  244 |                                 param.weight = (double *)realloc(param.weight,sizeof(double)*param.nr_weight);
+      |                                                                                             ^
+/workspace/libsvm/apps/svm-train.c: In function ‘read_problem’:
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:296:16: note: in expansion of macro ‘Malloc’
+  296 |         line = Malloc(char,max_line_len);
+      |                ^~~~~~
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:314:18: note: in expansion of macro ‘Malloc’
+  314 |         prob.y = Malloc(double,prob.l);
+      |                  ^~~~~~
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:315:18: note: in expansion of macro ‘Malloc’
+  315 |         prob.x = Malloc(struct svm_node *,prob.l);
+      |                  ^~~~~~
+[ 50%] Linking C executable ../bin/svm-train
+[ 50%] Built target svm-train
+[ 62%] Building C object apps/CMakeFiles/svm-predict.dir/svm-predict.c.o
+/workspace/libsvm/apps/svm-predict.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-predict.c:31:46: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   31 |                 line = (char *) realloc(line,max_line_len);
+      |                                              ^~~~~~~~~~~~
+/workspace/libsvm/apps/svm-predict.c: In function ‘predict’:
+/workspace/libsvm/apps/svm-predict.c:64:68: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   64 |                         prob_estimates = (double *) malloc(nr_class*sizeof(double));
+      |                                                                    ^
+/workspace/libsvm/apps/svm-predict.c:69:60: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   69 |                         int *labels=(int *) malloc(nr_class*sizeof(int));
+      |                                                            ^
+/workspace/libsvm/apps/svm-predict.c:71:68: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   71 |                         prob_estimates = (double *) malloc(nr_class*sizeof(double));
+      |                                                                    ^
+/workspace/libsvm/apps/svm-predict.c:81:43: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   81 |         line = (char *)malloc(max_line_len*sizeof(char));
+      |                                           ^
+/workspace/libsvm/apps/svm-predict.c:102:78: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  102 |                                 x = (struct svm_node *) realloc(x,max_nr_attr*sizeof(struct svm_node));
+      |                                                                              ^
+/workspace/libsvm/apps/svm-predict.c: In function ‘main’:
+/workspace/libsvm/apps/svm-predict.c:223:51: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  223 |         x = (struct svm_node *) malloc(max_nr_attr*sizeof(struct svm_node));
+      |                                                   ^
+[ 75%] Linking C executable ../bin/svm-predict
+[ 75%] Built target svm-predict
+[ 87%] Building C object apps/CMakeFiles/svm-scale.dir/svm-scale.c.o
+/workspace/libsvm/apps/svm-scale.c: In function ‘main’:
+/workspace/libsvm/apps/svm-scale.c:94:44: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   94 |         line = (char *) malloc(max_line_len*sizeof(char));
+      |                                            ^
+/workspace/libsvm/apps/svm-scale.c:158:53: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  158 |         feature_max = (double *)malloc((max_index+1)* sizeof(double));
+      |                                                     ^
+/workspace/libsvm/apps/svm-scale.c:159:53: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  159 |         feature_min = (double *)malloc((max_index+1)* sizeof(double));
+      |                                                     ^
+/workspace/libsvm/apps/svm-scale.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-scale.c:350:47: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  350 |                 line = (char *) realloc(line, max_line_len);
+      |                                               ^~~~~~~~~~~~
+[100%] Linking C executable ../bin/svm-scale
+[100%] Built target svm-scale
+[1;33m→ Testing svm-train...[0m
+*
+optimization finished, #iter = 162
+nu = 0.431029
+obj = -100.877288, rho = 0.424462
+nSV = 132, nBSV = 107
+Total nSV = 132
+[1;33m→ Testing svm-predict...[0m
+Accuracy = 86.6667% (234/270) (classification)
+[1;33m→ Testing svm-scale...[0m
+[1;33m→ Verifying outputs...[0m
+[0;32m✓ Build and test completed for Release[0m
+[1;33m→ Cleaning up build directories...[0m
+[1;33m→ Testing with BUILD_TYPE=Debug[0m
+[1;33m→ Configuring CMake...[0m
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/lib/ccache/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/lib/ccache/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring LibSVM version 3.37
+-- 
+-- LibSVM 3.37 Configuration Summary:
+--   Build type:        Debug
+--   Shared library:    ON
+--   OpenMP:            OFF
+--   Build apps:        ON
+--   Build examples:    OFF
+--   Python bindings:   OFF
+--   Java bindings:     OFF
+--   MATLAB bindings:   OFF
+-- 
+-- Configuring done (0.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /workspace/libsvm/build
+[1;33m→ Building...[0m
+[ 12%] Building CXX object src/CMakeFiles/svm.dir/svm.cpp.o
+[ 25%] Linking CXX shared library ../lib/libsvm.so
+[ 25%] Built target svm
+[ 37%] Building C object apps/CMakeFiles/svm-train.dir/svm-train.c.o
+/workspace/libsvm/apps/svm-train.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-train.c:75:46: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   75 |                 line = (char *) realloc(line,max_line_len);
+      |                                              ^~~~~~~~~~~~
+/workspace/libsvm/apps/svm-train.c: In function ‘do_cross_validation’:
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:128:26: note: in expansion of macro ‘Malloc’
+  128 |         double *target = Malloc(double,prob.l);
+      |                          ^~~~~~
+/workspace/libsvm/apps/svm-train.c: In function ‘parse_command_line’:
+/workspace/libsvm/apps/svm-train.c:243:99: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  243 |                                 param.weight_label = (int *)realloc(param.weight_label,sizeof(int)*param.nr_weight);
+      |                                                                                                   ^
+/workspace/libsvm/apps/svm-train.c:244:93: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  244 |                                 param.weight = (double *)realloc(param.weight,sizeof(double)*param.nr_weight);
+      |                                                                                             ^
+/workspace/libsvm/apps/svm-train.c: In function ‘read_problem’:
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:296:16: note: in expansion of macro ‘Malloc’
+  296 |         line = Malloc(char,max_line_len);
+      |                ^~~~~~
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:314:18: note: in expansion of macro ‘Malloc’
+  314 |         prob.y = Malloc(double,prob.l);
+      |                  ^~~~~~
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:315:18: note: in expansion of macro ‘Malloc’
+  315 |         prob.x = Malloc(struct svm_node *,prob.l);
+      |                  ^~~~~~
+[ 50%] Linking C executable ../bin/svm-train
+[ 50%] Built target svm-train
+[ 62%] Building C object apps/CMakeFiles/svm-predict.dir/svm-predict.c.o
+/workspace/libsvm/apps/svm-predict.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-predict.c:31:46: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   31 |                 line = (char *) realloc(line,max_line_len);
+      |                                              ^~~~~~~~~~~~
+/workspace/libsvm/apps/svm-predict.c: In function ‘predict’:
+/workspace/libsvm/apps/svm-predict.c:64:68: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   64 |                         prob_estimates = (double *) malloc(nr_class*sizeof(double));
+      |                                                                    ^
+/workspace/libsvm/apps/svm-predict.c:69:60: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   69 |                         int *labels=(int *) malloc(nr_class*sizeof(int));
+      |                                                            ^
+/workspace/libsvm/apps/svm-predict.c:71:68: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   71 |                         prob_estimates = (double *) malloc(nr_class*sizeof(double));
+      |                                                                    ^
+/workspace/libsvm/apps/svm-predict.c:81:43: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   81 |         line = (char *)malloc(max_line_len*sizeof(char));
+      |                                           ^
+/workspace/libsvm/apps/svm-predict.c:102:78: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  102 |                                 x = (struct svm_node *) realloc(x,max_nr_attr*sizeof(struct svm_node));
+      |                                                                              ^
+/workspace/libsvm/apps/svm-predict.c: In function ‘main’:
+/workspace/libsvm/apps/svm-predict.c:223:51: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  223 |         x = (struct svm_node *) malloc(max_nr_attr*sizeof(struct svm_node));
+      |                                                   ^
+[ 75%] Linking C executable ../bin/svm-predict
+[ 75%] Built target svm-predict
+[ 87%] Building C object apps/CMakeFiles/svm-scale.dir/svm-scale.c.o
+/workspace/libsvm/apps/svm-scale.c: In function ‘main’:
+/workspace/libsvm/apps/svm-scale.c:94:44: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   94 |         line = (char *) malloc(max_line_len*sizeof(char));
+      |                                            ^
+/workspace/libsvm/apps/svm-scale.c:158:53: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  158 |         feature_max = (double *)malloc((max_index+1)* sizeof(double));
+      |                                                     ^
+/workspace/libsvm/apps/svm-scale.c:159:53: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  159 |         feature_min = (double *)malloc((max_index+1)* sizeof(double));
+      |                                                     ^
+/workspace/libsvm/apps/svm-scale.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-scale.c:350:47: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  350 |                 line = (char *) realloc(line, max_line_len);
+      |                                               ^~~~~~~~~~~~
+[100%] Linking C executable ../bin/svm-scale
+[100%] Built target svm-scale
+[1;33m→ Testing svm-train...[0m
+*
+optimization finished, #iter = 162
+nu = 0.431029
+obj = -100.877288, rho = 0.424462
+nSV = 132, nBSV = 107
+Total nSV = 132
+[1;33m→ Testing svm-predict...[0m
+Accuracy = 86.6667% (234/270) (classification)
+[1;33m→ Testing svm-scale...[0m
+[1;33m→ Verifying outputs...[0m
+[0;32m✓ Build and test completed for Debug[0m
+[1;33m→ Cleaning up build directories...[0m
+
+==========================================
+Job 2: Build and Test (GCC-13)
+==========================================
+[1;33m→ Cleaning up build directories...[0m
+[1;33m→ Configuring CMake with GCC-13...[0m
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/lib/ccache/gcc-13 - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/lib/ccache/g++-13 - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring LibSVM version 3.37
+-- 
+-- LibSVM 3.37 Configuration Summary:
+--   Build type:        Release
+--   Shared library:    ON
+--   OpenMP:            OFF
+--   Build apps:        ON
+--   Build examples:    OFF
+--   Python bindings:   OFF
+--   Java bindings:     OFF
+--   MATLAB bindings:   OFF
+-- 
+-- Configuring done (0.4s)
+-- Generating done (0.0s)
+-- Build files have been written to: /workspace/libsvm/build
+[1;33m→ Building...[0m
+[ 12%] Building CXX object src/CMakeFiles/svm.dir/svm.cpp.o
+[ 25%] Linking CXX shared library ../lib/libsvm.so
+[ 25%] Built target svm
+[ 37%] Building C object apps/CMakeFiles/svm-train.dir/svm-train.c.o
+/workspace/libsvm/apps/svm-train.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-train.c:75:46: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   75 |                 line = (char *) realloc(line,max_line_len);
+      |                                              ^~~~~~~~~~~~
+/workspace/libsvm/apps/svm-train.c: In function ‘do_cross_validation’:
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:128:26: note: in expansion of macro ‘Malloc’
+  128 |         double *target = Malloc(double,prob.l);
+      |                          ^~~~~~
+/workspace/libsvm/apps/svm-train.c: In function ‘parse_command_line’:
+/workspace/libsvm/apps/svm-train.c:243:99: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  243 |                                 param.weight_label = (int *)realloc(param.weight_label,sizeof(int)*param.nr_weight);
+      |                                                                                                   ^
+/workspace/libsvm/apps/svm-train.c:244:93: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  244 |                                 param.weight = (double *)realloc(param.weight,sizeof(double)*param.nr_weight);
+      |                                                                                             ^
+/workspace/libsvm/apps/svm-train.c: In function ‘read_problem’:
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:296:16: note: in expansion of macro ‘Malloc’
+  296 |         line = Malloc(char,max_line_len);
+      |                ^~~~~~
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:314:18: note: in expansion of macro ‘Malloc’
+  314 |         prob.y = Malloc(double,prob.l);
+      |                  ^~~~~~
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:315:18: note: in expansion of macro ‘Malloc’
+  315 |         prob.x = Malloc(struct svm_node *,prob.l);
+      |                  ^~~~~~
+[ 50%] Linking C executable ../bin/svm-train
+[ 50%] Built target svm-train
+[ 62%] Building C object apps/CMakeFiles/svm-predict.dir/svm-predict.c.o
+/workspace/libsvm/apps/svm-predict.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-predict.c:31:46: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   31 |                 line = (char *) realloc(line,max_line_len);
+      |                                              ^~~~~~~~~~~~
+/workspace/libsvm/apps/svm-predict.c: In function ‘predict’:
+/workspace/libsvm/apps/svm-predict.c:64:68: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   64 |                         prob_estimates = (double *) malloc(nr_class*sizeof(double));
+      |                                                                    ^
+/workspace/libsvm/apps/svm-predict.c:69:60: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   69 |                         int *labels=(int *) malloc(nr_class*sizeof(int));
+      |                                                            ^
+/workspace/libsvm/apps/svm-predict.c:71:68: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   71 |                         prob_estimates = (double *) malloc(nr_class*sizeof(double));
+      |                                                                    ^
+/workspace/libsvm/apps/svm-predict.c:81:43: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   81 |         line = (char *)malloc(max_line_len*sizeof(char));
+      |                                           ^
+/workspace/libsvm/apps/svm-predict.c:102:78: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  102 |                                 x = (struct svm_node *) realloc(x,max_nr_attr*sizeof(struct svm_node));
+      |                                                                              ^
+/workspace/libsvm/apps/svm-predict.c: In function ‘main’:
+/workspace/libsvm/apps/svm-predict.c:223:51: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  223 |         x = (struct svm_node *) malloc(max_nr_attr*sizeof(struct svm_node));
+      |                                                   ^
+[ 75%] Linking C executable ../bin/svm-predict
+[ 75%] Built target svm-predict
+[ 87%] Building C object apps/CMakeFiles/svm-scale.dir/svm-scale.c.o
+/workspace/libsvm/apps/svm-scale.c: In function ‘main’:
+/workspace/libsvm/apps/svm-scale.c:94:44: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   94 |         line = (char *) malloc(max_line_len*sizeof(char));
+      |                                            ^
+/workspace/libsvm/apps/svm-scale.c:158:53: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  158 |         feature_max = (double *)malloc((max_index+1)* sizeof(double));
+      |                                                     ^
+/workspace/libsvm/apps/svm-scale.c:159:53: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  159 |         feature_min = (double *)malloc((max_index+1)* sizeof(double));
+      |                                                     ^
+/workspace/libsvm/apps/svm-scale.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-scale.c:350:47: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  350 |                 line = (char *) realloc(line, max_line_len);
+      |                                               ^~~~~~~~~~~~
+[100%] Linking C executable ../bin/svm-scale
+[100%] Built target svm-scale
+[1;33m→ Testing svm-train...[0m
+*
+optimization finished, #iter = 162
+nu = 0.431029
+obj = -100.877288, rho = 0.424462
+nSV = 132, nBSV = 107
+Total nSV = 132
+[0;32m✓ GCC-13 build completed[0m
+[1;33m→ Cleaning up build directories...[0m
+
+==========================================
+Job 3: Build and Test (Clang-18)
+==========================================
+[1;33m→ Cleaning up build directories...[0m
+[1;33m→ Configuring CMake with Clang-18...[0m
+-- The C compiler identification is Clang 18.1.3
+-- The CXX compiler identification is Clang 18.1.3
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/lib/ccache/clang-18 - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/lib/ccache/clang++-18 - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring LibSVM version 3.37
+-- 
+-- LibSVM 3.37 Configuration Summary:
+--   Build type:        Release
+--   Shared library:    ON
+--   OpenMP:            OFF
+--   Build apps:        ON
+--   Build examples:    OFF
+--   Python bindings:   OFF
+--   Java bindings:     OFF
+--   MATLAB bindings:   OFF
+-- 
+-- Configuring done (0.8s)
+-- Generating done (0.0s)
+-- Build files have been written to: /workspace/libsvm/build
+[1;33m→ Building...[0m
+[ 12%] Building CXX object src/CMakeFiles/svm.dir/svm.cpp.o
+/workspace/libsvm/src/svm.cpp:100:26: warning: implicit conversion changes signedness: 'int' to 'size_t' (aka 'unsigned long') [-Wsign-conversion]
+  100 |         head = (head_t *)calloc(l,sizeof(head_t));      // initialized to 0
+      |                          ~~~~~~ ^
+/workspace/libsvm/src/svm.cpp:102:23: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+  102 |         size_t header_size = l * sizeof(head_t) / sizeof(Qfloat);
+      |                              ^ ~
+/workspace/libsvm/src/svm.cpp:144:17: warning: implicit conversion changes signedness: 'int' to 'size_t' (aka 'unsigned long') [-Wsign-conversion]
+  144 |                         size += old->len;
+      |                              ~~ ~~~~~^~~
+/workspace/libsvm/src/svm.cpp:150:54: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+  150 |                 h->data = (Qfloat *)realloc(h->data,sizeof(Qfloat)*len);
+      |                                                                   ~^~~
+/workspace/libsvm/src/svm.cpp:151:11: warning: implicit conversion changes signedness: 'int' to 'size_t' (aka 'unsigned long') [-Wsign-conversion]
+  151 |                 size -= more;  // previous while loop guarantees size >= more and subtraction of size_t variable will not underflow
+      |                      ~~ ^~~~
+/workspace/libsvm/src/svm.cpp:183:16: warning: implicit conversion changes signedness: 'int' to 'size_t' (aka 'unsigned long') [-Wsign-conversion]
+  183 |                                 size += h->len;
+      |                                      ~~ ~~~^~~
+/workspace/libsvm/src/svm.cpp:1661:38: warning: implicit conversion changes signedness: 'const int' to 'unsigned long' [-Wsign-conversion]
+ 1661 |         double *alpha = Malloc(double,prob->l);
+      |                         ~~~~~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:1732:26: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 1732 |         double *t=Malloc(double,l);
+      |                   ~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:1843:29: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 1843 |         double **Q=Malloc(double *,k);
+      |                    ~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:1844:27: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 1844 |         double *Qp=Malloc(double,k);
+      |                    ~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:1850:22: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 1850 |                 Q[t]=Malloc(double,k);
+      |                      ~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:1909:31: warning: implicit conversion changes signedness: 'const int' to 'unsigned long' [-Wsign-conversion]
+ 1909 |         int *perm = Malloc(int,prob->l);
+      |                     ~~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:1910:43: warning: implicit conversion changes signedness: 'const int' to 'unsigned long' [-Wsign-conversion]
+ 1910 |         double *dec_values = Malloc(double,prob->l);
+      |                              ~~~~~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:1927:47: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 1927 |                 subprob.x = Malloc(struct svm_node*,subprob.l);
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:1928:37: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 1928 |                 subprob.y = Malloc(double,subprob.l);
+      |                             ~~~~~~~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2023:43: warning: implicit conversion changes signedness: 'const int' to 'unsigned long' [-Wsign-conversion]
+ 2023 |         double *dec_values = Malloc(double,prob->l);
+      |                              ~~~~~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2024:45: warning: implicit conversion changes signedness: 'const int' to 'unsigned long' [-Wsign-conversion]
+ 2024 |         double *pred_results = Malloc(double,prob->l);
+      |                                ~~~~~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2030:25: warning: implicit conversion changes signedness: 'const int' to 'size_t' (aka 'unsigned long') [-Wsign-conversion]
+ 2030 |         qsort(dec_values,prob->l,sizeof(double),compare_double);
+      |         ~~~~~            ~~~~~~^
+/workspace/libsvm/src/svm.cpp:2049:45: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2049 |                 double *tmp_marks = Malloc(double,nr_marks+1);
+      |                                     ~~~~~~~~~~~~~~~~~~~~~~^~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2072:36: warning: implicit conversion changes signedness: 'const int' to 'unsigned long' [-Wsign-conversion]
+ 2072 |         double *ymv = Malloc(double,prob->l);
+      |                       ~~~~~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2106:26: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2106 |         int *label = Malloc(int,max_nr_class);
+      |                      ~~~~~~~~~~~^~~~~~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2107:26: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2107 |         int *count = Malloc(int,max_nr_class);
+      |                      ~~~~~~~~~~~^~~~~~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2108:31: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2108 |         int *data_label = Malloc(int,l);
+      |                           ~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2129:34: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2129 |                                 label = (int *)realloc(label,max_nr_class*sizeof(int));
+      |                                                              ^~~~~~~~~~~~~
+/workspace/libsvm/src/svm.cpp:2130:34: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2130 |                                 count = (int *)realloc(count,max_nr_class*sizeof(int));
+      |                                                              ^~~~~~~~~~~~~
+/workspace/libsvm/src/svm.cpp:2156:26: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2156 |         int *start = Malloc(int,nr_class);
+      |                      ~~~~~~~~~~~^~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2206:33: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2206 |                 model->SV = Malloc(svm_node *,nSV);
+      |                             ~~~~~~~~~~~~~~~~~~^~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2207:37: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2207 |                 model->sv_coef[0] = Malloc(double,nSV);
+      |                                     ~~~~~~~~~~~~~~^~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2208:34: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2208 |                 model->sv_indices = Malloc(int,nSV);
+      |                                     ~~~~~~~~~~~^~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2229:47: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2229 |                         double *prob_density_marks = Malloc(double,nr_marks);
+      |                                                      ~~~~~~~~~~~~~~^~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2247:26: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2247 |                 int *perm = Malloc(int,l);
+      |                             ~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2254:36: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2254 |                 svm_node **x = Malloc(svm_node *,l);
+      |                                ~~~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2261:39: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2261 |                 double *weighted_C = Malloc(double, nr_class);
+      |                                      ~~~~~~~~~~~~~~~^~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2278:31: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2278 |                 bool *nonzero = Malloc(bool,l);
+      |                                 ~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2281:72: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2281 |                 decision_function *f = Malloc(decision_function,nr_class*(nr_class-1)/2);
+      |                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2286:45: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2286 |                         probA=Malloc(double,nr_class*(nr_class-1)/2);
+      |                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2287:45: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2287 |                         probB=Malloc(double,nr_class*(nr_class-1)/2);
+      |                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2298:45: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2298 |                                 sub_prob.x = Malloc(svm_node *,sub_prob.l);
+      |                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2299:41: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2299 |                                 sub_prob.y = Malloc(double,sub_prob.l);
+      |                                              ~~~~~~~~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2331:29: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2331 |                 model->label = Malloc(int,nr_class);
+      |                                ~~~~~~~~~~~^~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2335:51: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2335 |                 model->rho = Malloc(double,nr_class*(nr_class-1)/2);
+      |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2341:54: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2341 |                         model->probA = Malloc(double,nr_class*(nr_class-1)/2);
+      |                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2342:54: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2342 |                         model->probB = Malloc(double,nr_class*(nr_class-1)/2);
+      |                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2357:30: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2357 |                 int *nz_count = Malloc(int,nr_class);
+      |                                 ~~~~~~~~~~~^~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2358:27: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2358 |                 model->nSV = Malloc(int,nr_class);
+      |                              ~~~~~~~~~~~^~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2375:33: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2375 |                 model->SV = Malloc(svm_node *,total_sv);
+      |                             ~~~~~~~~~~~~~~~~~~^~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2376:34: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2376 |                 model->sv_indices = Malloc(int,total_sv);
+      |                                     ~~~~~~~~~~~^~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2385:30: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2385 |                 int *nz_start = Malloc(int,nr_class);
+      |                                 ~~~~~~~~~~~^~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2390:44: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2390 |                 model->sv_coef = Malloc(double *,nr_class-1);
+      |                                  ~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2392:38: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2392 |                         model->sv_coef[i] = Malloc(double,total_sv);
+      |                                             ~~~~~~~~~~~~~~^~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2443:25: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2443 |         int *perm = Malloc(int,l);
+      |                     ~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2450:33: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2450 |         fold_start = Malloc(int,nr_fold+1);
+      |                      ~~~~~~~~~~~~~~~~~~^~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2462:32: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2462 |                 int *fold_count = Malloc(int,nr_fold);
+      |                                   ~~~~~~~~~~~^~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2464:27: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2464 |                 int *index = Malloc(int,l);
+      |                              ~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2522:47: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2522 |                 subprob.x = Malloc(struct svm_node*,subprob.l);
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2523:37: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2523 |                 subprob.y = Malloc(double,subprob.l);
+      |                             ~~~~~~~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2542:41: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2542 |                         double *prob_estimates=Malloc(double,svm_get_nr_class(submodel));
+      |                                                ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2627:34: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2627 |                 double *kvalue = Malloc(double,l);
+      |                                  ~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2634:27: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2634 |                 int *start = Malloc(int,nr_class);
+      |                              ~~~~~~~~~~~^~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2639:26: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2639 |                 int *vote = Malloc(int,nr_class);
+      |                             ~~~~~~~~~~~^~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2691:52: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2691 |                 dec_values = Malloc(double, nr_class*(nr_class-1)/2);
+      |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2705:60: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2705 |                 double *dec_values = Malloc(double, nr_class*(nr_class-1)/2);
+      |                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2709:42: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2709 |                 double **pairwise_prob=Malloc(double *,nr_class);
+      |                                        ~~~~~~~~~~~~~~~~^~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2711:35: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2711 |                         pairwise_prob[i]=Malloc(double,nr_class);
+      |                                          ~~~~~~~~~~~~~~^~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2878:32: warning: implicit conversion changes signedness: 'int' to 'size_t' (aka 'unsigned long') [-Wsign-conversion]
+ 2878 |                 line = (char *) realloc(line,max_line_len);
+      |                                 ~~~~~~~      ^~~~~~~~~~~~
+/workspace/libsvm/src/svm.cpp:2956:31: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2956 |                         model->rho = Malloc(double,n);
+      |                                      ~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2963:30: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2963 |                         model->label = Malloc(int,n);
+      |                                        ~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2970:33: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2970 |                         model->probA = Malloc(double,n);
+      |                                        ~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2977:33: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2977 |                         model->probB = Malloc(double,n);
+      |                                        ~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2984:46: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2984 |                         model->prob_density_marks = Malloc(double,n);
+      |                                                     ~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:2991:28: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 2991 |                         model->nSV = Malloc(int,n);
+      |                                      ~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:3056:21: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 3056 |         line = Malloc(char,max_line_len);
+      |                ~~~~~~~~~~~~^~~~~~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:3076:35: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 3076 |         model->sv_coef = Malloc(double *,m);
+      |                          ~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:3079:37: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 3079 |                 model->sv_coef[i] = Malloc(double,l);
+      |                                     ~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:3080:31: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 3080 |         model->SV = Malloc(svm_node*,l);
+      |                     ~~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:3082:36: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 3082 |         if(l>0) x_space = Malloc(svm_node,elements);
+      |                           ~~~~~~~~~~~~~~~~^~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:3247:27: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 3247 |                 int *label = Malloc(int,max_nr_class);
+      |                              ~~~~~~~~~~~^~~~~~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:3248:27: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 3248 |                 int *count = Malloc(int,max_nr_class);
+      |                              ~~~~~~~~~~~^~~~~~~~~~~~~
+/workspace/libsvm/src/svm.cpp:43:40: note: expanded from macro 'Malloc'
+   43 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/src/svm.cpp:3266:35: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 3266 |                                         label = (int *)realloc(label,max_nr_class*sizeof(int));
+      |                                                                      ^~~~~~~~~~~~~
+/workspace/libsvm/src/svm.cpp:3267:35: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+ 3267 |                                         count = (int *)realloc(count,max_nr_class*sizeof(int));
+      |                                                                      ^~~~~~~~~~~~~
+/workspace/libsvm/src/svm.cpp:28:43: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+   28 |         memcpy((void *)dst,(void *)src,sizeof(T)*n);
+      |                                                 ~^
+/workspace/libsvm/src/svm.cpp:280:2: note: in instantiation of function template specialization 'clone<svm_node *const, const svm_node *>' requested here
+  280 |         clone(x,x_,l);
+      |         ^
+/workspace/libsvm/src/svm.cpp:28:43: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+   28 |         memcpy((void *)dst,(void *)src,sizeof(T)*n);
+      |                                                 ~^
+/workspace/libsvm/src/svm.cpp:515:2: note: in instantiation of function template specialization 'clone<const double, double>' requested here
+  515 |         clone(p, p_,l);
+      |         ^
+/workspace/libsvm/src/svm.cpp:28:43: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+   28 |         memcpy((void *)dst,(void *)src,sizeof(T)*n);
+      |                                                 ~^
+/workspace/libsvm/src/svm.cpp:516:2: note: in instantiation of function template specialization 'clone<const signed char, signed char>' requested here
+  516 |         clone(y, y_,l);
+      |         ^
+/workspace/libsvm/src/svm.cpp:28:43: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+   28 |         memcpy((void *)dst,(void *)src,sizeof(T)*n);
+      |                                                 ~^
+/workspace/libsvm/src/svm.cpp:517:2: note: in instantiation of function template specialization 'clone<double, double>' requested here
+  517 |         clone(alpha,alpha_,l);
+      |         ^
+84 warnings generated.
+[ 25%] Linking CXX shared library ../lib/libsvm.so
+[ 25%] Built target svm
+[ 37%] Building C object apps/CMakeFiles/svm-train.dir/svm-train.c.o
+/workspace/libsvm/apps/svm-train.c:75:32: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+   75 |                 line = (char *) realloc(line,max_line_len);
+      |                                 ~~~~~~~      ^~~~~~~~~~~~
+/workspace/libsvm/apps/svm-train.c:128:38: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+  128 |         double *target = Malloc(double,prob.l);
+      |                          ~~~~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/apps/svm-train.c:7:40: note: expanded from macro 'Malloc'
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/apps/svm-train.c:243:78: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+  243 |                                 param.weight_label = (int *)realloc(param.weight_label,sizeof(int)*param.nr_weight);
+      |                                                                                                   ~~~~~~~^~~~~~~~~
+/workspace/libsvm/apps/svm-train.c:244:72: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+  244 |                                 param.weight = (double *)realloc(param.weight,sizeof(double)*param.nr_weight);
+      |                                                                                             ~~~~~~~^~~~~~~~~
+/workspace/libsvm/apps/svm-train.c:296:21: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+  296 |         line = Malloc(char,max_line_len);
+      |                ~~~~~~~~~~~~^~~~~~~~~~~~~
+/workspace/libsvm/apps/svm-train.c:7:40: note: expanded from macro 'Malloc'
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/apps/svm-train.c:314:30: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+  314 |         prob.y = Malloc(double,prob.l);
+      |                  ~~~~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/apps/svm-train.c:7:40: note: expanded from macro 'Malloc'
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+/workspace/libsvm/apps/svm-train.c:315:41: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+  315 |         prob.x = Malloc(struct svm_node *,prob.l);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+/workspace/libsvm/apps/svm-train.c:7:40: note: expanded from macro 'Malloc'
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                        ^ ~
+7 warnings generated.
+[ 50%] Linking C executable ../bin/svm-train
+[ 50%] Built target svm-train
+[ 62%] Building C object apps/CMakeFiles/svm-predict.dir/svm-predict.c.o
+/workspace/libsvm/apps/svm-predict.c:31:32: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+   31 |                 line = (char *) realloc(line,max_line_len);
+      |                                 ~~~~~~~      ^~~~~~~~~~~~
+/workspace/libsvm/apps/svm-predict.c:64:39: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+   64 |                         prob_estimates = (double *) malloc(nr_class*sizeof(double));
+      |                                                            ^~~~~~~~~
+/workspace/libsvm/apps/svm-predict.c:69:31: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+   69 |                         int *labels=(int *) malloc(nr_class*sizeof(int));
+      |                                                    ^~~~~~~~~
+/workspace/libsvm/apps/svm-predict.c:71:39: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+   71 |                         prob_estimates = (double *) malloc(nr_class*sizeof(double));
+      |                                                            ^~~~~~~~~
+/workspace/libsvm/apps/svm-predict.c:81:24: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+   81 |         line = (char *)malloc(max_line_len*sizeof(char));
+      |                               ^~~~~~~~~~~~~
+/workspace/libsvm/apps/svm-predict.c:102:39: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+  102 |                                 x = (struct svm_node *) realloc(x,max_nr_attr*sizeof(struct svm_node));
+      |                                                                   ^~~~~~~~~~~~
+/workspace/libsvm/apps/svm-predict.c:223:33: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+  223 |         x = (struct svm_node *) malloc(max_nr_attr*sizeof(struct svm_node));
+      |                                        ^~~~~~~~~~~~
+7 warnings generated.
+[ 75%] Linking C executable ../bin/svm-predict
+[ 75%] Built target svm-predict
+[ 87%] Building C object apps/CMakeFiles/svm-scale.dir/svm-scale.c.o
+/workspace/libsvm/apps/svm-scale.c:94:25: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+   94 |         line = (char *) malloc(max_line_len*sizeof(char));
+      |                                ^~~~~~~~~~~~~
+/workspace/libsvm/apps/svm-scale.c:158:43: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+  158 |         feature_max = (double *)malloc((max_index+1)* sizeof(double));
+      |                                         ~~~~~~~~~^~ ~
+/workspace/libsvm/apps/svm-scale.c:159:43: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+  159 |         feature_min = (double *)malloc((max_index+1)* sizeof(double));
+      |                                         ~~~~~~~~~^~ ~
+/workspace/libsvm/apps/svm-scale.c:350:33: warning: implicit conversion changes signedness: 'int' to 'unsigned long' [-Wsign-conversion]
+  350 |                 line = (char *) realloc(line, max_line_len);
+      |                                 ~~~~~~~       ^~~~~~~~~~~~
+4 warnings generated.
+[100%] Linking C executable ../bin/svm-scale
+[100%] Built target svm-scale
+[1;33m→ Testing svm-train...[0m
+*
+optimization finished, #iter = 162
+nu = 0.431029
+obj = -100.877288, rho = 0.424462
+nSV = 132, nBSV = 107
+Total nSV = 132
+[0;32m✓ Clang-18 build completed[0m
+[1;33m→ Cleaning up build directories...[0m
+
+==========================================
+Job 4: Build with OpenMP
+==========================================
+[1;33m→ Cleaning up build directories...[0m
+[1;33m→ Configuring CMake with OpenMP...[0m
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/lib/ccache/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/lib/ccache/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring LibSVM version 3.37
+-- Found OpenMP_C: -fopenmp (found version "4.5")
+-- Found OpenMP_CXX: -fopenmp (found version "4.5")
+-- Found OpenMP: TRUE (found version "4.5")
+-- OpenMP found - parallel training enabled
+-- 
+-- LibSVM 3.37 Configuration Summary:
+--   Build type:        Release
+--   Shared library:    ON
+--   OpenMP:            ON
+--   Build apps:        ON
+--   Build examples:    OFF
+--   Python bindings:   OFF
+--   Java bindings:     OFF
+--   MATLAB bindings:   OFF
+-- 
+-- Configuring done (0.8s)
+-- Generating done (0.0s)
+-- Build files have been written to: /workspace/libsvm/build
+[1;33m→ Building...[0m
+[ 12%] Building CXX object src/CMakeFiles/svm.dir/svm.cpp.o
+[ 25%] Linking CXX shared library ../lib/libsvm.so
+[ 25%] Built target svm
+[ 37%] Building C object apps/CMakeFiles/svm-train.dir/svm-train.c.o
+/workspace/libsvm/apps/svm-train.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-train.c:75:46: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   75 |                 line = (char *) realloc(line,max_line_len);
+      |                                              ^~~~~~~~~~~~
+/workspace/libsvm/apps/svm-train.c: In function ‘do_cross_validation’:
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:128:26: note: in expansion of macro ‘Malloc’
+  128 |         double *target = Malloc(double,prob.l);
+      |                          ^~~~~~
+/workspace/libsvm/apps/svm-train.c: In function ‘parse_command_line’:
+/workspace/libsvm/apps/svm-train.c:243:99: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  243 |                                 param.weight_label = (int *)realloc(param.weight_label,sizeof(int)*param.nr_weight);
+      |                                                                                                   ^
+/workspace/libsvm/apps/svm-train.c:244:93: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  244 |                                 param.weight = (double *)realloc(param.weight,sizeof(double)*param.nr_weight);
+      |                                                                                             ^
+/workspace/libsvm/apps/svm-train.c: In function ‘read_problem’:
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:296:16: note: in expansion of macro ‘Malloc’
+  296 |         line = Malloc(char,max_line_len);
+      |                ^~~~~~
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:314:18: note: in expansion of macro ‘Malloc’
+  314 |         prob.y = Malloc(double,prob.l);
+      |                  ^~~~~~
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:315:18: note: in expansion of macro ‘Malloc’
+  315 |         prob.x = Malloc(struct svm_node *,prob.l);
+      |                  ^~~~~~
+[ 50%] Linking C executable ../bin/svm-train
+[ 50%] Built target svm-train
+[ 62%] Building C object apps/CMakeFiles/svm-predict.dir/svm-predict.c.o
+/workspace/libsvm/apps/svm-predict.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-predict.c:31:46: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   31 |                 line = (char *) realloc(line,max_line_len);
+      |                                              ^~~~~~~~~~~~
+/workspace/libsvm/apps/svm-predict.c: In function ‘predict’:
+/workspace/libsvm/apps/svm-predict.c:64:68: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   64 |                         prob_estimates = (double *) malloc(nr_class*sizeof(double));
+      |                                                                    ^
+/workspace/libsvm/apps/svm-predict.c:69:60: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   69 |                         int *labels=(int *) malloc(nr_class*sizeof(int));
+      |                                                            ^
+/workspace/libsvm/apps/svm-predict.c:71:68: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   71 |                         prob_estimates = (double *) malloc(nr_class*sizeof(double));
+      |                                                                    ^
+/workspace/libsvm/apps/svm-predict.c:81:43: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   81 |         line = (char *)malloc(max_line_len*sizeof(char));
+      |                                           ^
+/workspace/libsvm/apps/svm-predict.c:102:78: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  102 |                                 x = (struct svm_node *) realloc(x,max_nr_attr*sizeof(struct svm_node));
+      |                                                                              ^
+/workspace/libsvm/apps/svm-predict.c: In function ‘main’:
+/workspace/libsvm/apps/svm-predict.c:223:51: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  223 |         x = (struct svm_node *) malloc(max_nr_attr*sizeof(struct svm_node));
+      |                                                   ^
+[ 75%] Linking C executable ../bin/svm-predict
+[ 75%] Built target svm-predict
+[ 87%] Building C object apps/CMakeFiles/svm-scale.dir/svm-scale.c.o
+/workspace/libsvm/apps/svm-scale.c: In function ‘main’:
+/workspace/libsvm/apps/svm-scale.c:94:44: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   94 |         line = (char *) malloc(max_line_len*sizeof(char));
+      |                                            ^
+/workspace/libsvm/apps/svm-scale.c:158:53: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  158 |         feature_max = (double *)malloc((max_index+1)* sizeof(double));
+      |                                                     ^
+/workspace/libsvm/apps/svm-scale.c:159:53: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  159 |         feature_min = (double *)malloc((max_index+1)* sizeof(double));
+      |                                                     ^
+/workspace/libsvm/apps/svm-scale.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-scale.c:350:47: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  350 |                 line = (char *) realloc(line, max_line_len);
+      |                                               ^~~~~~~~~~~~
+[100%] Linking C executable ../bin/svm-scale
+[100%] Built target svm-scale
+[1;33m→ Testing with OpenMP...[0m
+*
+optimization finished, #iter = 162
+nu = 0.431029
+obj = -100.877288, rho = 0.424462
+nSV = 132, nBSV = 107
+Total nSV = 132
+[0;32m✓ OpenMP build completed[0m
+[1;33m→ Cleaning up build directories...[0m
+
+==========================================
+Job 5: Shared Library Build
+==========================================
+[1;33m→ Cleaning up build directories...[0m
+[1;33m→ Configuring CMake for shared library...[0m
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/lib/ccache/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/lib/ccache/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring LibSVM version 3.37
+-- 
+-- LibSVM 3.37 Configuration Summary:
+--   Build type:        Release
+--   Shared library:    ON
+--   OpenMP:            OFF
+--   Build apps:        ON
+--   Build examples:    OFF
+--   Python bindings:   OFF
+--   Java bindings:     OFF
+--   MATLAB bindings:   OFF
+-- 
+-- Configuring done (0.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /workspace/libsvm/build
+[1;33m→ Building...[0m
+[ 12%] Building CXX object src/CMakeFiles/svm.dir/svm.cpp.o
+[ 25%] Linking CXX shared library ../lib/libsvm.so
+[ 25%] Built target svm
+[ 37%] Building C object apps/CMakeFiles/svm-train.dir/svm-train.c.o
+/workspace/libsvm/apps/svm-train.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-train.c:75:46: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   75 |                 line = (char *) realloc(line,max_line_len);
+      |                                              ^~~~~~~~~~~~
+/workspace/libsvm/apps/svm-train.c: In function ‘do_cross_validation’:
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:128:26: note: in expansion of macro ‘Malloc’
+  128 |         double *target = Malloc(double,prob.l);
+      |                          ^~~~~~
+/workspace/libsvm/apps/svm-train.c: In function ‘parse_command_line’:
+/workspace/libsvm/apps/svm-train.c:243:99: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  243 |                                 param.weight_label = (int *)realloc(param.weight_label,sizeof(int)*param.nr_weight);
+      |                                                                                                   ^
+/workspace/libsvm/apps/svm-train.c:244:93: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  244 |                                 param.weight = (double *)realloc(param.weight,sizeof(double)*param.nr_weight);
+      |                                                                                             ^
+/workspace/libsvm/apps/svm-train.c: In function ‘read_problem’:
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:296:16: note: in expansion of macro ‘Malloc’
+  296 |         line = Malloc(char,max_line_len);
+      |                ^~~~~~
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:314:18: note: in expansion of macro ‘Malloc’
+  314 |         prob.y = Malloc(double,prob.l);
+      |                  ^~~~~~
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:315:18: note: in expansion of macro ‘Malloc’
+  315 |         prob.x = Malloc(struct svm_node *,prob.l);
+      |                  ^~~~~~
+[ 50%] Linking C executable ../bin/svm-train
+[ 50%] Built target svm-train
+[ 62%] Building C object apps/CMakeFiles/svm-predict.dir/svm-predict.c.o
+/workspace/libsvm/apps/svm-predict.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-predict.c:31:46: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   31 |                 line = (char *) realloc(line,max_line_len);
+      |                                              ^~~~~~~~~~~~
+/workspace/libsvm/apps/svm-predict.c: In function ‘predict’:
+/workspace/libsvm/apps/svm-predict.c:64:68: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   64 |                         prob_estimates = (double *) malloc(nr_class*sizeof(double));
+      |                                                                    ^
+/workspace/libsvm/apps/svm-predict.c:69:60: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   69 |                         int *labels=(int *) malloc(nr_class*sizeof(int));
+      |                                                            ^
+/workspace/libsvm/apps/svm-predict.c:71:68: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   71 |                         prob_estimates = (double *) malloc(nr_class*sizeof(double));
+      |                                                                    ^
+/workspace/libsvm/apps/svm-predict.c:81:43: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   81 |         line = (char *)malloc(max_line_len*sizeof(char));
+      |                                           ^
+/workspace/libsvm/apps/svm-predict.c:102:78: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  102 |                                 x = (struct svm_node *) realloc(x,max_nr_attr*sizeof(struct svm_node));
+      |                                                                              ^
+/workspace/libsvm/apps/svm-predict.c: In function ‘main’:
+/workspace/libsvm/apps/svm-predict.c:223:51: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  223 |         x = (struct svm_node *) malloc(max_nr_attr*sizeof(struct svm_node));
+      |                                                   ^
+[ 75%] Linking C executable ../bin/svm-predict
+[ 75%] Built target svm-predict
+[ 87%] Building C object apps/CMakeFiles/svm-scale.dir/svm-scale.c.o
+/workspace/libsvm/apps/svm-scale.c: In function ‘main’:
+/workspace/libsvm/apps/svm-scale.c:94:44: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   94 |         line = (char *) malloc(max_line_len*sizeof(char));
+      |                                            ^
+/workspace/libsvm/apps/svm-scale.c:158:53: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  158 |         feature_max = (double *)malloc((max_index+1)* sizeof(double));
+      |                                                     ^
+/workspace/libsvm/apps/svm-scale.c:159:53: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  159 |         feature_min = (double *)malloc((max_index+1)* sizeof(double));
+      |                                                     ^
+/workspace/libsvm/apps/svm-scale.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-scale.c:350:47: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  350 |                 line = (char *) realloc(line, max_line_len);
+      |                                               ^~~~~~~~~~~~
+[100%] Linking C executable ../bin/svm-scale
+[100%] Built target svm-scale
+[1;33m→ Verifying shared library...[0m
+[0;32m✓ Shared library build completed[0m
+[1;33m→ Cleaning up build directories...[0m
+
+==========================================
+Job 6: Python Bindings
+==========================================
+[1;33m→ Cleaning up build directories...[0m
+[1;33m→ Building shared library for Python...[0m
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/lib/ccache/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/lib/ccache/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring LibSVM version 3.37
+-- Configuring Python bindings
+-- Found Python3: /usr/bin/python3.12 (found version "3.12.3") found components: Interpreter
+-- 
+-- LibSVM 3.37 Configuration Summary:
+--   Build type:        Release
+--   Shared library:    ON
+--   OpenMP:            OFF
+--   Build apps:        ON
+--   Build examples:    OFF
+--   Python bindings:   ON
+--   Java bindings:     OFF
+--   MATLAB bindings:   OFF
+-- 
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: /workspace/libsvm/build
+[ 11%] Building CXX object src/CMakeFiles/svm.dir/svm.cpp.o
+[ 22%] Linking CXX shared library ../lib/libsvm.so
+[ 22%] Built target svm
+[ 33%] Building C object apps/CMakeFiles/svm-train.dir/svm-train.c.o
+/workspace/libsvm/apps/svm-train.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-train.c:75:46: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   75 |                 line = (char *) realloc(line,max_line_len);
+      |                                              ^~~~~~~~~~~~
+/workspace/libsvm/apps/svm-train.c: In function ‘do_cross_validation’:
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:128:26: note: in expansion of macro ‘Malloc’
+  128 |         double *target = Malloc(double,prob.l);
+      |                          ^~~~~~
+/workspace/libsvm/apps/svm-train.c: In function ‘parse_command_line’:
+/workspace/libsvm/apps/svm-train.c:243:99: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  243 |                                 param.weight_label = (int *)realloc(param.weight_label,sizeof(int)*param.nr_weight);
+      |                                                                                                   ^
+/workspace/libsvm/apps/svm-train.c:244:93: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  244 |                                 param.weight = (double *)realloc(param.weight,sizeof(double)*param.nr_weight);
+      |                                                                                             ^
+/workspace/libsvm/apps/svm-train.c: In function ‘read_problem’:
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:296:16: note: in expansion of macro ‘Malloc’
+  296 |         line = Malloc(char,max_line_len);
+      |                ^~~~~~
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:314:18: note: in expansion of macro ‘Malloc’
+  314 |         prob.y = Malloc(double,prob.l);
+      |                  ^~~~~~
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:315:18: note: in expansion of macro ‘Malloc’
+  315 |         prob.x = Malloc(struct svm_node *,prob.l);
+      |                  ^~~~~~
+[ 44%] Linking C executable ../bin/svm-train
+[ 44%] Built target svm-train
+[ 55%] Building C object apps/CMakeFiles/svm-predict.dir/svm-predict.c.o
+/workspace/libsvm/apps/svm-predict.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-predict.c:31:46: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   31 |                 line = (char *) realloc(line,max_line_len);
+      |                                              ^~~~~~~~~~~~
+/workspace/libsvm/apps/svm-predict.c: In function ‘predict’:
+/workspace/libsvm/apps/svm-predict.c:64:68: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   64 |                         prob_estimates = (double *) malloc(nr_class*sizeof(double));
+      |                                                                    ^
+/workspace/libsvm/apps/svm-predict.c:69:60: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   69 |                         int *labels=(int *) malloc(nr_class*sizeof(int));
+      |                                                            ^
+/workspace/libsvm/apps/svm-predict.c:71:68: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   71 |                         prob_estimates = (double *) malloc(nr_class*sizeof(double));
+      |                                                                    ^
+/workspace/libsvm/apps/svm-predict.c:81:43: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   81 |         line = (char *)malloc(max_line_len*sizeof(char));
+      |                                           ^
+/workspace/libsvm/apps/svm-predict.c:102:78: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  102 |                                 x = (struct svm_node *) realloc(x,max_nr_attr*sizeof(struct svm_node));
+      |                                                                              ^
+/workspace/libsvm/apps/svm-predict.c: In function ‘main’:
+/workspace/libsvm/apps/svm-predict.c:223:51: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  223 |         x = (struct svm_node *) malloc(max_nr_attr*sizeof(struct svm_node));
+      |                                                   ^
+[ 66%] Linking C executable ../bin/svm-predict
+[ 66%] Built target svm-predict
+[ 77%] Building C object apps/CMakeFiles/svm-scale.dir/svm-scale.c.o
+/workspace/libsvm/apps/svm-scale.c: In function ‘main’:
+/workspace/libsvm/apps/svm-scale.c:94:44: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   94 |         line = (char *) malloc(max_line_len*sizeof(char));
+      |                                            ^
+/workspace/libsvm/apps/svm-scale.c:158:53: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  158 |         feature_max = (double *)malloc((max_index+1)* sizeof(double));
+      |                                                     ^
+/workspace/libsvm/apps/svm-scale.c:159:53: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  159 |         feature_min = (double *)malloc((max_index+1)* sizeof(double));
+      |                                                     ^
+/workspace/libsvm/apps/svm-scale.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-scale.c:350:47: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  350 |                 line = (char *) realloc(line, max_line_len);
+      |                                               ^~~~~~~~~~~~
+[ 88%] Linking C executable ../bin/svm-scale
+[ 88%] Built target svm-scale
+[100%] Copying libsvm to Python package directory
+[100%] Built target copy-lib-to-python
+[1;33m→ Copying library to Python package...[0m
+[1;33m→ Testing Python import...[0m
+Python bindings import successful
+[1;33m→ Testing Python training...[0m
+Python training test successful
+[0;32m✓ Python bindings test completed[0m
+[1;33m→ Cleaning up build directories...[0m
+
+==========================================
+Job 7: Java Bindings
+==========================================
+[1;33m→ Cleaning up build directories...[0m
+[1;33m⚠ Java or m4 not found, skipping Java bindings test[0m
+
+==========================================
+Job 8: Qt Example
+==========================================
+[1;33m→ Cleaning up build directories...[0m
+[1;33m⚠ Qt5 not found, skipping Qt example test[0m
+
+==========================================
+Job 9: Static Analysis
+==========================================
+[1;33m⚠ cppcheck not found, skipping static analysis[0m
+
+==========================================
+Job 10: Installation Test
+==========================================
+[1;33m→ Cleaning up build directories...[0m
+[1;33m→ Configuring CMake for installation...[0m
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/lib/ccache/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/lib/ccache/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring LibSVM version 3.37
+-- 
+-- LibSVM 3.37 Configuration Summary:
+--   Build type:        Release
+--   Shared library:    ON
+--   OpenMP:            OFF
+--   Build apps:        ON
+--   Build examples:    OFF
+--   Python bindings:   OFF
+--   Java bindings:     OFF
+--   MATLAB bindings:   OFF
+-- 
+-- Configuring done (0.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /workspace/libsvm/build
+[1;33m→ Building...[0m
+[ 12%] Building CXX object src/CMakeFiles/svm.dir/svm.cpp.o
+[ 25%] Linking CXX shared library ../lib/libsvm.so
+[ 25%] Built target svm
+[ 37%] Building C object apps/CMakeFiles/svm-train.dir/svm-train.c.o
+/workspace/libsvm/apps/svm-train.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-train.c:75:46: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   75 |                 line = (char *) realloc(line,max_line_len);
+      |                                              ^~~~~~~~~~~~
+/workspace/libsvm/apps/svm-train.c: In function ‘do_cross_validation’:
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:128:26: note: in expansion of macro ‘Malloc’
+  128 |         double *target = Malloc(double,prob.l);
+      |                          ^~~~~~
+/workspace/libsvm/apps/svm-train.c: In function ‘parse_command_line’:
+/workspace/libsvm/apps/svm-train.c:243:99: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  243 |                                 param.weight_label = (int *)realloc(param.weight_label,sizeof(int)*param.nr_weight);
+      |                                                                                                   ^
+/workspace/libsvm/apps/svm-train.c:244:93: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  244 |                                 param.weight = (double *)realloc(param.weight,sizeof(double)*param.nr_weight);
+      |                                                                                             ^
+/workspace/libsvm/apps/svm-train.c: In function ‘read_problem’:
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:296:16: note: in expansion of macro ‘Malloc’
+  296 |         line = Malloc(char,max_line_len);
+      |                ^~~~~~
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:314:18: note: in expansion of macro ‘Malloc’
+  314 |         prob.y = Malloc(double,prob.l);
+      |                  ^~~~~~
+/workspace/libsvm/apps/svm-train.c:7:42: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+    7 | #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+      |                                          ^
+/workspace/libsvm/apps/svm-train.c:315:18: note: in expansion of macro ‘Malloc’
+  315 |         prob.x = Malloc(struct svm_node *,prob.l);
+      |                  ^~~~~~
+[ 50%] Linking C executable ../bin/svm-train
+[ 50%] Built target svm-train
+[ 62%] Building C object apps/CMakeFiles/svm-predict.dir/svm-predict.c.o
+/workspace/libsvm/apps/svm-predict.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-predict.c:31:46: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+   31 |                 line = (char *) realloc(line,max_line_len);
+      |                                              ^~~~~~~~~~~~
+/workspace/libsvm/apps/svm-predict.c: In function ‘predict’:
+/workspace/libsvm/apps/svm-predict.c:64:68: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   64 |                         prob_estimates = (double *) malloc(nr_class*sizeof(double));
+      |                                                                    ^
+/workspace/libsvm/apps/svm-predict.c:69:60: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   69 |                         int *labels=(int *) malloc(nr_class*sizeof(int));
+      |                                                            ^
+/workspace/libsvm/apps/svm-predict.c:71:68: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   71 |                         prob_estimates = (double *) malloc(nr_class*sizeof(double));
+      |                                                                    ^
+/workspace/libsvm/apps/svm-predict.c:81:43: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   81 |         line = (char *)malloc(max_line_len*sizeof(char));
+      |                                           ^
+/workspace/libsvm/apps/svm-predict.c:102:78: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  102 |                                 x = (struct svm_node *) realloc(x,max_nr_attr*sizeof(struct svm_node));
+      |                                                                              ^
+/workspace/libsvm/apps/svm-predict.c: In function ‘main’:
+/workspace/libsvm/apps/svm-predict.c:223:51: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  223 |         x = (struct svm_node *) malloc(max_nr_attr*sizeof(struct svm_node));
+      |                                                   ^
+[ 75%] Linking C executable ../bin/svm-predict
+[ 75%] Built target svm-predict
+[ 87%] Building C object apps/CMakeFiles/svm-scale.dir/svm-scale.c.o
+/workspace/libsvm/apps/svm-scale.c: In function ‘main’:
+/workspace/libsvm/apps/svm-scale.c:94:44: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+   94 |         line = (char *) malloc(max_line_len*sizeof(char));
+      |                                            ^
+/workspace/libsvm/apps/svm-scale.c:158:53: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  158 |         feature_max = (double *)malloc((max_index+1)* sizeof(double));
+      |                                                     ^
+/workspace/libsvm/apps/svm-scale.c:159:53: warning: conversion to ‘long unsigned int’ from ‘int’ may change the sign of the result [-Wsign-conversion]
+  159 |         feature_min = (double *)malloc((max_index+1)* sizeof(double));
+      |                                                     ^
+/workspace/libsvm/apps/svm-scale.c: In function ‘readline’:
+/workspace/libsvm/apps/svm-scale.c:350:47: warning: conversion to ‘size_t’ {aka ‘long unsigned int’} from ‘int’ may change the sign of the result [-Wsign-conversion]
+  350 |                 line = (char *) realloc(line, max_line_len);
+      |                                               ^~~~~~~~~~~~
+[100%] Linking C executable ../bin/svm-scale
+[100%] Built target svm-scale
+[1;33m→ Installing...[0m
+-- Install configuration: "Release"
+-- Installing: /workspace/libsvm/install/lib/libsvm.so.3.37
+-- Installing: /workspace/libsvm/install/lib/libsvm.so.3
+-- Installing: /workspace/libsvm/install/lib/libsvm.so
+-- Installing: /workspace/libsvm/install/include/svm.h
+-- Installing: /workspace/libsvm/install/bin/svm-train
+-- Set non-toolchain portion of runtime path of "/workspace/libsvm/install/bin/svm-train" to ""
+-- Installing: /workspace/libsvm/install/bin/svm-predict
+-- Set non-toolchain portion of runtime path of "/workspace/libsvm/install/bin/svm-predict" to ""
+-- Installing: /workspace/libsvm/install/bin/svm-scale
+-- Installing: /workspace/libsvm/install/lib/cmake/LibSVM/LibSVMConfig.cmake
+-- Installing: /workspace/libsvm/install/lib/cmake/LibSVM/LibSVMConfigVersion.cmake
+-- Installing: /workspace/libsvm/install/lib/cmake/LibSVM/LibSVMTargets.cmake
+-- Installing: /workspace/libsvm/install/lib/cmake/LibSVM/LibSVMTargets-release.cmake
+[1;33m→ Verifying installation...[0m
+[1;33m→ Testing find_package...[0m
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/lib/ccache/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/lib/ccache/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found LibSVM 3.37
+-- Configuring done (0.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /workspace/libsvm/test_project/build
+[ 50%] Building CXX object CMakeFiles/test_app.dir/test.cpp.o
+[100%] Linking CXX executable test_app
+[100%] Built target test_app
+[0;32m✓ Installation test completed[0m
+
+==========================================
+Job 11: Code Coverage
+==========================================
+[1;33m→ Cleaning up build directories...[0m
+[1;33m⚠ lcov not found, skipping code coverage[0m
+[1;33m→ Cleaning up build directories...[0m
+
+==========================================
+[0;32m✓ All CI jobs completed successfully![0m
+==========================================
