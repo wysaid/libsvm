@@ -316,7 +316,12 @@ jobs:
 
     - name: Build Java bindings
       shell: bash
-      run: cmake --build build --target java-bindings --config Release
+      run: |
+        if [ "${{ runner.os }}" == "Windows" ]; then
+          cmake --build build --config Release --target java-bindings
+        else
+          cmake --build build --target java-bindings --config Release
+        fi
 
     - name: Test Java bindings
       shell: bash
