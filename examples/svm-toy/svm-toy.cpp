@@ -4,7 +4,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <list>
-#include "../../svm.h"
+#include "svm.h"
 using namespace std;
 
 #define DEFAULT_PARAM "-t 2 -c 100"

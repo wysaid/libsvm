@@ -1,0 +1,36 @@
+# ============================================================================
+# LibSVM CMake Configuration File
+# ============================================================================
+#
+# This file is used by find_package(LibSVM) to locate the installed library.
+#
+# Usage in your project:
+#   find_package(LibSVM REQUIRED)
+#   target_link_libraries(your_target LibSVM::svm)
+#
+# Variables defined:
+#   LibSVM_FOUND        - True if LibSVM was found
+#   LibSVM_VERSION      - Version string
+#   LibSVM_INCLUDE_DIRS - Include directories
+#   LibSVM_LIBRARIES    - Library to link
+#
+# Imported targets:
+#   LibSVM::svm         - The LibSVM library target
+#
+# ============================================================================
+
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# Include the exported targets
+include("${CMAKE_CURRENT_LIST_DIR}/LibSVMTargets.cmake")
+
+# Set variables for compatibility
+get_target_property(LibSVM_INCLUDE_DIRS LibSVM::svm INTERFACE_INCLUDE_DIRECTORIES)
+set(LibSVM_LIBRARIES LibSVM::svm)
+set(LibSVM_VERSION "@PROJECT_VERSION@")
+
+check_required_components(LibSVM)
+
+message(STATUS "Found LibSVM ${LibSVM_VERSION}")

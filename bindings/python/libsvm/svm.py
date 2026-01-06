@@ -21,25 +21,65 @@ __all__ = ['libsvm', 'svm_problem', 'svm_parameter',
            'toPyModel', 'gen_svm_nodearray', 'print_null', 'svm_node', 'svm_forms',
             'PRINT_STRING_FUN', 'kernel_names', 'c_double', 'svm_model']
 
-try:
+def _load_libsvm():
+    """Load the libsvm shared library."""
     dirname = path.dirname(path.abspath(__file__))
-    dynamic_lib_name = 'clib.cp*'
-    path_to_so = glob(path.join(dirname, dynamic_lib_name))[0]
-    libsvm = CDLL(path_to_so)
-except:
+    
+    # Try loading from various locations
+    lib_search_paths = []
+    
+    if sys.platform == 'win32':
+        lib_names = ['svm.dll', 'libsvm.dll']
+    elif sys.platform == 'darwin':
+        lib_names = ['libsvm.dylib', 'libsvm.so', 'libsvm.so.3']
+    else:
+        lib_names = ['libsvm.so.3', 'libsvm.so']
+    
+    # Search paths in order of preference:
+    # 1. Same directory as this file (for pip install -e or copied lib)
+    # 2. Build directory (../../../build/lib)
+    # 3. Project root build artifacts
+    search_dirs = [
+        dirname,
+        path.join(dirname, '..', '..', '..', 'build', 'lib'),
+        path.join(dirname, '..', '..', '..', 'lib'),
+    ]
+    
+    for search_dir in search_dirs:
+        for lib_name in lib_names:
+            lib_path = path.join(search_dir, lib_name)
+            if path.exists(lib_path):
+                lib_search_paths.append(lib_path)
+    
+    # Also check for Python extension module
     try:
-        if sys.platform == 'win32':
-            libsvm = CDLL(path.join(dirname, r'..\..\windows\libsvm.dll'))
-        else:
-            libsvm = CDLL(path.join(dirname, '../../libsvm.so.4'))
-    except:
-    # For unix the prefix 'lib' is not considered.
-        if find_library('svm'):
-            libsvm = CDLL(find_library('svm'))
-        elif find_library('libsvm'):
-            libsvm = CDLL(find_library('libsvm'))
-        else:
-            raise Exception('LIBSVM library not found.')
+        dynamic_lib_name = 'clib.cp*'
+        path_to_so = glob(path.join(dirname, dynamic_lib_name))[0]
+        lib_search_paths.insert(0, path_to_so)
+    except (IndexError, Exception):
+        pass
+    
+    # Try each path
+    for lib_path in lib_search_paths:
+        try:
+            return CDLL(lib_path)
+        except OSError:
+            continue
+    
+    # Fall back to system library search
+    if find_library('svm'):
+        return CDLL(find_library('svm'))
+    elif find_library('libsvm'):
+        return CDLL(find_library('libsvm'))
+    
+    raise Exception(
+        'LIBSVM library not found. Please either:\n'
+        '1. Build the library with CMake and set LD_LIBRARY_PATH/DYLD_LIBRARY_PATH\n'
+        '2. Install libsvm system-wide\n'
+        '3. Copy the shared library to the libsvm Python package directory'
+    )
+
+libsvm = _load_libsvm()
 
 class svm_forms(IntEnum):
     C_SVC = 0
