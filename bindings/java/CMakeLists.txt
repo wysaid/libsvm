@@ -64,10 +64,15 @@ set(JAVA_APP_SOURCES
 set(SVM_JAVA_M4 ${CMAKE_CURRENT_SOURCE_DIR}/libsvm/svm.m4)
 set(SVM_JAVA_GENERATED ${CMAKE_CURRENT_BINARY_DIR}/libsvm/svm.java)
 
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/generate_svm_java.sh"
+    "#!/bin/bash\n"
+    "mkdir -p '${CMAKE_CURRENT_BINARY_DIR}/libsvm'\n"
+    "'${M4_EXECUTABLE}' '${SVM_JAVA_M4}' > '${SVM_JAVA_GENERATED}'\n"
+)
+
 add_custom_command(
     OUTPUT ${SVM_JAVA_GENERATED}
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/libsvm
-    COMMAND ${M4_EXECUTABLE} ${SVM_JAVA_M4} -o ${SVM_JAVA_GENERATED}
+    COMMAND bash "${CMAKE_CURRENT_BINARY_DIR}/generate_svm_java.sh"
     DEPENDS ${SVM_JAVA_M4}
     COMMENT "Generating svm.java from svm.m4"
 )
