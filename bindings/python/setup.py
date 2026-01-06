@@ -31,7 +31,7 @@ headers = [
 ]
 
 # license parameters
-license_source = path.join("..", "COPYRIGHT")
+license_source = path.join("..", "..", "COPYRIGHT")
 license_file = "LICENSE"
 license_name = "BSD-3-Clause"
 
@@ -62,9 +62,9 @@ else:
 
 def create_cpp_source():
     for f in source_codes + headers:
-        src_file = path.join("..", f)
+        src_file = path.join("..", "..", "src", f)
         tgt_file = path.join(cpp_dir, f)
-        # ensure blas directory is created
+        # ensure cpp-source directory is created
         os.makedirs(path.dirname(tgt_file), exist_ok=True)
         copyfile(src_file, tgt_file)
 

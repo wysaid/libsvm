@@ -4,6 +4,22 @@ This document records major changes and developments from the original libsvm co
 
 ---
 
+## 2026-01-06: Python Wheel Build and CI Fixes
+
+Fixed critical path issues in Python wheel build workflow and setup.py configuration.
+
+#### Python Setup Fixes
+- Fixed source file paths in setup.py to correctly reference `../../src/` directory
+- Fixed COPYRIGHT file path to `../../COPYRIGHT`
+- Ensured cpp-source directory creation works properly for pip/wheel builds
+
+#### Wheel Workflow Fixes
+- Corrected Python bindings path from `python/` to `bindings/python/` in wheel.yml
+- Fixed artifact upload path to match new directory structure
+- Added conditional execution for Codecov upload (only when token is configured)
+
+---
+
 ## 2026-01-06: CI/CD Workflow Shell Configuration
 
 Fixed workflow failures by standardizing shell usage across all CI jobs.
