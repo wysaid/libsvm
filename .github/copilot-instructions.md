@@ -4,4 +4,4 @@
 - Use English for commit messages and PR descriptions
 - This is a fork of libsvm with significant modifications. Submit PRs to this repository, not the upstream
 - All documents with `.md` extension must be written in English
-- `docs/DEV_LOG.md` records major architectural changes from upstream libsvm. Update only for significant modifications (build system, API changes, major features)
+- `docs/FORK.md` records major architectural changes from upstream libsvm. Update only for significant modifications (build system, API changes, major features)

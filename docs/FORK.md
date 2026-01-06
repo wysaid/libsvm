@@ -1,6 +1,8 @@
-# LibSVM Development Log
+# Fork Changes from Upstream
 
-Records major changes from the upstream libsvm repository.
+This document outlines major modifications made in this fork compared to the original [cjlin1/libsvm](https://github.com/cjlin1/libsvm).
+
+**Purpose**: Track significant architectural changes, not day-to-day development details.
 
 ---
 

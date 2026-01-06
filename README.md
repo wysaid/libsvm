@@ -20,7 +20,7 @@ This is a modernized fork of LibSVM with the following improvements:
 
 For the original build instructions using Makefile, see [README.original](README.original).
 
-For development logs and migration details, see [docs/DEV_LOG.md](docs/DEV_LOG.md).
+For details on changes from the upstream repository, see [docs/FORK.md](docs/FORK.md).
 
 ## Table of Contents
 
