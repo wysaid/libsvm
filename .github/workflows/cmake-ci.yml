@@ -48,6 +48,13 @@ jobs:
     - name: Setup compiler (Linux)
       if: runner.os == 'Linux' && matrix.compiler != 'default'
       run: |
+        if [ "${{ matrix.compiler }}" == "gcc" ]; then
+          sudo apt-get update
+          sudo apt-get install -y gcc-13 g++-13
+        elif [ "${{ matrix.compiler }}" == "clang" ]; then
+          sudo apt-get update
+          sudo apt-get install -y clang-18
+        fi
         echo "CC=${{ matrix.cc }}" >> $GITHUB_ENV
         echo "CXX=${{ matrix.cxx }}" >> $GITHUB_ENV
 
@@ -532,8 +539,7 @@ jobs:
         lcov --list coverage.info
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
+      continue-on-error: true
       with:
         files: ./coverage.info
-        fail_ci_if_error: false
-        token: ${{ secrets.CODECOV_TOKEN }}
