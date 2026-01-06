@@ -350,20 +350,45 @@ jobs:
       shell: bash
       run: echo "$(brew --prefix m4)/bin" >> $GITHUB_PATH
 
-    - name: Configure CMake
+    - name: Configure CMake (Non-Windows)
+      if: runner.os != 'Windows'
       shell: bash
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release -DLIBSVM_BUILD_JAVA=ON
 
-    - name: Build Java bindings
+    - name: Configure CMake (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $env:PATH = "C:\tools\msys64\usr\bin;" + $env:PATH
+        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release -DLIBSVM_BUILD_JAVA=ON -DM4_EXECUTABLE=C:/tools/msys64/usr/bin/m4.exe
+
+    - name: Build Java bindings (Non-Windows)
+      if: runner.os != 'Windows'
       shell: bash
       run: cmake --build ${{github.workspace}}/build --target java-bindings
 
-    - name: Test Java bindings
+    - name: Build Java bindings (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $env:PATH = "C:\tools\msys64\usr\bin;" + $env:PATH
+        cmake --build ${{github.workspace}}/build --target java-bindings --config Release
+
+    - name: Test Java bindings (Non-Windows)
+      if: runner.os != 'Windows'
       shell: bash
       run: |
         java -classpath ${{github.workspace}}/build/bindings/java/libsvm.jar svm_train \
           ${{github.workspace}}/examples/data/heart_scale \
           ${{github.workspace}}/build/heart_scale_java.model
+
+    - name: Test Java bindings (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        java -classpath "${{github.workspace}}/build/bindings/java/libsvm.jar" svm_train `
+          "${{github.workspace}}/examples/data/heart_scale" `
+          "${{github.workspace}}/build/heart_scale_java.model"
 
   # ============================================================================
   # Qt/svm-toy Example
