@@ -326,6 +326,33 @@ jobs:
       shell: bash
       run: cmake --build build --config Release
 
+    - name: Build Java bindings manually (Windows workaround)
+      if: runner.os == 'Windows'
+      shell: bash
+      run: |
+        cd build/bindings/java
+        echo "Generating svm.java from svm.m4..."
+        m4 ../../../bindings/java/libsvm/svm.m4 > libsvm/svm.java
+        
+        echo "Creating build directory..."
+        mkdir -p java-build/libsvm
+        
+        echo "Copying source files..."
+        cp -r ../../../bindings/java/libsvm/*.java java-build/libsvm/
+        cp libsvm/svm.java java-build/libsvm/
+        cp ../../../bindings/java/*.java java-build/
+        
+        echo "Compiling Java files..."
+        javac -d java-build --release 11 \
+          java-build/libsvm/*.java \
+          java-build/*.java
+        
+        echo "Creating JAR file..."
+        jar cvf libsvm.jar -C java-build .
+        
+        echo "Verifying JAR was created..."
+        ls -lh libsvm.jar
+
     - name: Verify JAR file
       shell: bash
       run: |
