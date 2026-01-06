@@ -447,7 +447,7 @@ jobs:
         EOF
         cmake -B test_project/build \
           -S test_project \
-          -DCMAKE_PREFIX_PATH=./install
+          -DCMAKE_PREFIX_PATH="$(pwd)/install"
         cmake --build test_project/build
 
   # ============================================================================
