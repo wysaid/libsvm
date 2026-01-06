@@ -4,6 +4,20 @@ This document records major changes and developments from the original libsvm co
 
 ---
 
+## 2026-01-06: CI/CD Workflow Shell Configuration
+
+Fixed workflow failures by standardizing shell usage across all CI jobs.
+
+#### Root Cause
+Windows runners were using PowerShell by default, which incorrectly parsed multi-line commands with backslash line continuations. This caused errors like:
+- `The source directory "/" does not appear to contain CMakeLists.txt`
+- `-DCMAKE_BUILD_TYPE=Release is not recognized as a cmdlet`
+
+#### Solution
+Added `shell: bash` to all run steps across all jobs to ensure consistent behavior across Windows, macOS, and Linux. Bash properly handles line continuations with backslashes.
+
+---
+
 ## 2026-01-06: CI/CD Workflow and CMake Fixes
 
 Fixed multiple issues identified in GitHub Actions CI and code review.
