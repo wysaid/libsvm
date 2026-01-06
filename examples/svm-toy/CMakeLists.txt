@@ -2,6 +2,13 @@
 # svm-toy - Qt GUI Example for LibSVM
 # ============================================================================
 
+# Check for QTDIR environment variable
+if(DEFINED ENV{QTDIR})
+    message(STATUS "QTDIR environment variable found: $ENV{QTDIR}")
+    set(CMAKE_PREFIX_PATH "$ENV{QTDIR}" ${CMAKE_PREFIX_PATH})
+    list(APPEND CMAKE_PREFIX_PATH "$ENV{QTDIR}/lib/cmake")
+endif()
+
 # Try to find Qt6 first, then fall back to Qt5
 find_package(Qt6 COMPONENTS Widgets Gui Core QUIET)
 

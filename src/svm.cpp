@@ -7,6 +7,9 @@
 #include <stdarg.h>
 #include <limits.h>
 #include <locale.h>
+#include <algorithm>
+#include <memory>
+#include <vector>
 #include "svm.h"
 #ifdef _OPENMP
 #include <omp.h>
@@ -15,18 +18,20 @@
 int libsvm_version = LIBSVM_VERSION;
 typedef float Qfloat;
 typedef signed char schar;
-#ifndef min
-template <class T> static inline T min(T x,T y) { return (x<y)?x:y; }
-#endif
-#ifndef max
-template <class T> static inline T max(T x,T y) { return (x>y)?x:y; }
-#endif
-template <class T> static inline void swap(T& x, T& y) { T t=x; x=y; y=t; }
-template <class S, class T> static inline void clone(T*& dst, S* src, int n)
+
+// Use C++17 standard library functions
+using std::min;
+using std::max;
+using std::swap;
+using std::vector;
+
+// Modern clone function using RAII with std::vector
+template <class S, class T>
+static inline vector<T> clone(S* src, int n)
 {
-	dst = new T[n];
-	memcpy((void *)dst,(void *)src,sizeof(T)*n);
+	return vector<T>(src, src + n);
 }
+
 static inline double powi(double base, int times)
 {
 	double tmp = base, ret = 1.0;
@@ -38,8 +43,10 @@ static inline double powi(double base, int times)
 	}
 	return ret;
 }
+
 #define INF HUGE_VAL
 #define TAU 1e-12
+// Legacy Malloc macro for compatibility (consider using auto_array or std::vector in new code)
 #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
 
 static void print_string_stdout(const char *s)
@@ -214,7 +221,8 @@ public:
 	virtual double *get_QD() const = 0;
 	virtual void swap_index(int i, int j) const	// no so const...
 	{
-		swap(x[i],x[j]);
+		// Use std::swap on vector elements (requires mutable)
+		std::swap(const_cast<svm_node const*&>(x[i]), const_cast<svm_node const*&>(x[j]));
 		if(x_square) swap(x_square[i],x_square[j]);
 	}
 protected:
@@ -222,7 +230,7 @@ protected:
 	double (Kernel::*kernel_function)(int i, int j) const;
 
 private:
-	const svm_node **x;
+	vector<svm_node const*> x;
 	double *x_square;
 
 	// svm_parameter
@@ -277,7 +285,7 @@ Kernel::Kernel(int l, svm_node * const * x_, const svm_parameter& param)
 			break;
 	}
 
-	clone(x,x_,l);
+	x = clone<svm_node* const, svm_node const*>(x_, l);
 
 	if(kernel_type == RBF)
 	{
@@ -291,7 +299,6 @@ Kernel::Kernel(int l, svm_node * const * x_, const svm_parameter& param)
 
 Kernel::~Kernel()
 {
-	delete[] x;
 	delete[] x_square;
 }
 
@@ -412,16 +419,16 @@ public:
 		   SolutionInfo* si, int shrinking);
 protected:
 	int active_size;
-	schar *y;
+	vector<schar> y;
 	double *G;		// gradient of objective function
 	enum { LOWER_BOUND, UPPER_BOUND, FREE };
 	char *alpha_status;	// LOWER_BOUND, UPPER_BOUND, FREE
-	double *alpha;
+	vector<double> alpha;
 	const QMatrix *Q;
 	const double *QD;
 	double eps;
 	double Cp,Cn;
-	double *p;
+	vector<double> p;
 	int *active_set;
 	double *G_bar;		// gradient, if we treat free variables as 0
 	int l;
@@ -446,6 +453,10 @@ protected:
 	void reconstruct_gradient();
 	virtual int select_working_set(int &i, int &j);
 	virtual double calculate_rho();
+	// Helper methods for array access
+	schar* y_data() { return y.data(); }
+	double* alpha_data() { return alpha.data(); }
+	double* p_data() { return p.data(); }
 	virtual void do_shrinking();
 private:
 	bool be_shrunk(int i, double Gmax1, double Gmax2);
@@ -512,9 +523,9 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 	this->l = l;
 	this->Q = &Q;
 	QD=Q.get_QD();
-	clone(p, p_,l);
-	clone(y, y_,l);
-	clone(alpha,alpha_,l);
+	p = clone<const double, double>(p_, l);
+	y = clone<const schar, schar>(y_, l);
+	alpha = clone<const double, double>(alpha_, l);
 	this->Cp = Cp;
 	this->Cn = Cn;
 	this->eps = eps;
@@ -777,9 +788,6 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 
 	info("\noptimization finished, #iter = %d\n",iter);
 
-	delete[] p;
-	delete[] y;
-	delete[] alpha;
 	delete[] alpha_status;
 	delete[] active_set;
 	delete[] G;
@@ -1273,7 +1281,7 @@ public:
 	SVC_Q(const svm_problem& prob, const svm_parameter& param, const schar *y_)
 	:Kernel(prob.l, prob.x, param)
 	{
-		clone(y,y_,prob.l);
+		y = clone<const schar, schar>(y_, prob.l);
 		cache = new Cache(prob.l,(size_t)(param.cache_size*(1<<20)));
 		QD = new double[prob.l];
 		for(int i=0;i<prob.l;i++)
@@ -1304,18 +1312,17 @@ public:
 	{
 		cache->swap_index(i,j);
 		Kernel::swap_index(i,j);
-		swap(y[i],y[j]);
+		std::swap(const_cast<schar&>(y[i]), const_cast<schar&>(y[j]));
 		swap(QD[i],QD[j]);
 	}
 
 	~SVC_Q()
 	{
-		delete[] y;
 		delete cache;
 		delete[] QD;
 	}
 private:
-	schar *y;
+	vector<schar> y;
 	Cache *cache;
 	double *QD;
 };
@@ -1452,20 +1459,19 @@ static void solve_c_svc(
 	double *alpha, Solver::SolutionInfo* si, double Cp, double Cn)
 {
 	int l = prob->l;
-	double *minus_ones = new double[l];
-	schar *y = new schar[l];
+	vector<double> minus_ones(l, -1.0);
+	vector<schar> y(l);
 
 	int i;
 
 	for(i=0;i<l;i++)
 	{
 		alpha[i] = 0;
-		minus_ones[i] = -1;
 		if(prob->y[i] > 0) y[i] = +1; else y[i] = -1;
 	}
 
 	Solver s;
-	s.Solve(l, SVC_Q(*prob,*param,y), minus_ones, y,
+	s.Solve(l, SVC_Q(*prob,*param,y.data()), minus_ones.data(), y.data(),
 		alpha, Cp, Cn, param->eps, si, param->shrinking);
 
 	double sum_alpha=0;
@@ -1477,9 +1483,6 @@ static void solve_c_svc(
 
 	for(i=0;i<l;i++)
 		alpha[i] *= y[i];
-
-	delete[] minus_ones;
-	delete[] y;
 }
 
 static void solve_nu_svc(
@@ -1490,7 +1493,7 @@ static void solve_nu_svc(
 	int l = prob->l;
 	double nu = param->nu;
 
-	schar *y = new schar[l];
+	vector<schar> y(l);
 
 	for(i=0;i<l;i++)
 		if(prob->y[i]>0)
@@ -1513,13 +1516,10 @@ static void solve_nu_svc(
 			sum_neg -= alpha[i];
 		}
 
-	double *zeros = new double[l];
-
-	for(i=0;i<l;i++)
-		zeros[i] = 0;
+	vector<double> zeros(l, 0.0);
 
 	Solver_NU s;
-	s.Solve(l, SVC_Q(*prob,*param,y), zeros, y,
+	s.Solve(l, SVC_Q(*prob,*param,y.data()), zeros.data(), y.data(),
 		alpha, 1.0, 1.0, param->eps, si,  param->shrinking);
 	double r = si->r;
 
@@ -1532,9 +1532,6 @@ static void solve_nu_svc(
 	si->obj /= (r*r);
 	si->upper_bound_p = 1/r;
 	si->upper_bound_n = 1/r;
-
-	delete[] y;
-	delete[] zeros;
 }
 
 static void solve_one_class(
@@ -1542,8 +1539,8 @@ static void solve_one_class(
 	double *alpha, Solver::SolutionInfo* si)
 {
 	int l = prob->l;
-	double *zeros = new double[l];
-	schar *ones = new schar[l];
+	vector<double> zeros(l, 0.0);
+	vector<schar> ones(l, 1);
 	int i;
 
 	int n = (int)(param->nu*prob->l);	// # of alpha's at upper bound
@@ -1555,18 +1552,9 @@ static void solve_one_class(
 	for(i=n+1;i<l;i++)
 		alpha[i] = 0;
 
-	for(i=0;i<l;i++)
-	{
-		zeros[i] = 0;
-		ones[i] = 1;
-	}
-
 	Solver s;
-	s.Solve(l, ONE_CLASS_Q(*prob,*param), zeros, ones,
+	s.Solve(l, ONE_CLASS_Q(*prob,*param), zeros.data(), ones.data(),
 		alpha, 1.0, 1.0, param->eps, si, param->shrinking);
-
-	delete[] zeros;
-	delete[] ones;
 }
 
 static void solve_epsilon_svr(
@@ -1574,9 +1562,9 @@ static void solve_epsilon_svr(
 	double *alpha, Solver::SolutionInfo* si)
 {
 	int l = prob->l;
-	double *alpha2 = new double[2*l];
-	double *linear_term = new double[2*l];
-	schar *y = new schar[2*l];
+	vector<double> alpha2(2*l);
+	vector<double> linear_term(2*l);
+	vector<schar> y(2*l);
 	int i;
 
 	for(i=0;i<l;i++)
@@ -1591,8 +1579,8 @@ static void solve_epsilon_svr(
 	}
 
 	Solver s;
-	s.Solve(2*l, SVR_Q(*prob,*param), linear_term, y,
-		alpha2, param->C, param->C, param->eps, si, param->shrinking);
+	s.Solve(2*l, SVR_Q(*prob,*param), linear_term.data(), y.data(),
+		alpha2.data(), param->C, param->C, param->eps, si, param->shrinking);
 
 	double sum_alpha = 0;
 	for(i=0;i<l;i++)
@@ -1601,10 +1589,6 @@ static void solve_epsilon_svr(
 		sum_alpha += fabs(alpha[i]);
 	}
 	info("nu = %f\n",sum_alpha/(param->C*l));
-
-	delete[] alpha2;
-	delete[] linear_term;
-	delete[] y;
 }
 
 static void solve_nu_svr(
@@ -1613,9 +1597,9 @@ static void solve_nu_svr(
 {
 	int l = prob->l;
 	double C = param->C;
-	double *alpha2 = new double[2*l];
-	double *linear_term = new double[2*l];
-	schar *y = new schar[2*l];
+	vector<double> alpha2(2*l);
+	vector<double> linear_term(2*l);
+	vector<schar> y(2*l);
 	int i;
 
 	double sum = C * param->nu * l / 2;
@@ -1632,17 +1616,13 @@ static void solve_nu_svr(
 	}
 
 	Solver_NU s;
-	s.Solve(2*l, SVR_Q(*prob,*param), linear_term, y,
-		alpha2, C, C, param->eps, si, param->shrinking);
+	s.Solve(2*l, SVR_Q(*prob,*param), linear_term.data(), y.data(),
+		alpha2.data(), C, C, param->eps, si, param->shrinking);
 
 	info("epsilon = %f\n",-si->r);
 
 	for(i=0;i<l;i++)
 		alpha[i] = alpha2[i] - alpha2[i+l];
-
-	delete[] alpha2;
-	delete[] linear_term;
-	delete[] y;
 }
 
 //

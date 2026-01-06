@@ -40,19 +40,32 @@ option(LIBSVM_BUILD_MATLAB "Build MATLAB/MEX bindings" OFF)
 # Compiler Settings
 # ============================================================================
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 # Position Independent Code (required for shared libraries)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+# Platform-specific definitions to avoid conflicts
+if(WIN32)
+    # Prevent Windows.h from defining min/max macros
+    add_compile_definitions(NOMINMAX)
+    # Prevent Windows.h from defining unnecessary macros
+    add_compile_definitions(WIN32_LEAN_AND_MEAN)
+    # Use modern secure CRT functions
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+endif()
+
 # Compiler warnings
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
     add_compile_options(-Wall -Wconversion)
 elseif(MSVC)
     add_compile_options(/W3)
+    # Enable UTF-8 source file encoding
+    add_compile_options(/utf-8)
 endif()
 
 # Optimization for Release builds

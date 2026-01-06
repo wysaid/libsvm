@@ -326,12 +326,12 @@ private slots:
 					double x,y;
 					if(sscanf(buf,"%d%*d:%lf%*d:%lf",&v,&x,&y)==3)
 					{
-						point p = {x,y,v};
+						point p = {x,y,static_cast<signed char>(v)};
 						point_list.push_back(p);
 					}
 					else if(sscanf(buf,"%lf%*d:%lf",&y,&x)==2)
 					{
-						point p = {x,y,current_value};
+						point p = {x,y,static_cast<signed char>(current_value)};
 						point_list.push_back(p);
 					}
 					else
@@ -413,7 +413,7 @@ SvmToyWindow::~SvmToyWindow()
 
 void SvmToyWindow::mousePressEvent( QMouseEvent* event )
 {
-	point p = {(double)event->x()/XLEN, (double)event->y()/YLEN, current_value};
+	point p = {(double)event->x()/XLEN, (double)event->y()/YLEN, static_cast<signed char>(current_value)};
 	point_list.push_back(p);
 	draw_point(p);
 }
