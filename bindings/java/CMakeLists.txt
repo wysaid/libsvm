@@ -64,17 +64,16 @@ set(JAVA_APP_SOURCES
 set(SVM_JAVA_M4 ${CMAKE_CURRENT_SOURCE_DIR}/libsvm/svm.m4)
 set(SVM_JAVA_GENERATED ${CMAKE_CURRENT_BINARY_DIR}/libsvm/svm.java)
 
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/generate_svm_java.sh"
-    "#!/bin/bash\n"
-    "mkdir -p '${CMAKE_CURRENT_BINARY_DIR}/libsvm'\n"
-    "'${M4_EXECUTABLE}' '${SVM_JAVA_M4}' > '${SVM_JAVA_GENERATED}'\n"
-)
+# Create output directory
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/libsvm)
 
+# Use CMake to execute m4 directly (cross-platform compatible)
 add_custom_command(
     OUTPUT ${SVM_JAVA_GENERATED}
-    COMMAND bash "${CMAKE_CURRENT_BINARY_DIR}/generate_svm_java.sh"
+    COMMAND ${M4_EXECUTABLE} ${SVM_JAVA_M4} > ${SVM_JAVA_GENERATED}
     DEPENDS ${SVM_JAVA_M4}
     COMMENT "Generating svm.java from svm.m4"
+    VERBATIM
 )
 
 add_custom_target(generate-svm-java
