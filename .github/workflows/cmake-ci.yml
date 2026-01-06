@@ -301,14 +301,22 @@ jobs:
       if: runner.os == 'Windows'
       shell: bash
       run: |
-        choco install msys2 -y
+        choco install msys2 -y --no-progress
         /c/tools/msys64/usr/bin/bash.exe -lc "pacman -S --noconfirm m4"
         echo "/c/tools/msys64/usr/bin" >> $GITHUB_PATH
+        echo "M4 installed, verifying..."
+        /c/tools/msys64/usr/bin/m4 --version | head -1
 
     - name: Set PATH for m4 (macOS)
       if: runner.os == 'macOS'
       shell: bash
       run: echo "$(brew --prefix m4)/bin" >> $GITHUB_PATH
+
+    - name: Verify m4 is available
+      shell: bash
+      run: |
+        which m4 || echo "m4 not in PATH"
+        m4 --version | head -1
 
     - name: Configure CMake
       shell: bash
