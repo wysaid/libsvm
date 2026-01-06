@@ -2,8 +2,8 @@
 # Ubuntu CI Simulation Script
 # This script simulates the GitHub Actions CI workflow for Ubuntu
 
-set -e  # Exit on error
-set -u  # Exit on undefined variable
+set -e # Exit on error
+set -u # Exit on undefined variable
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -54,38 +54,38 @@ cleanup
 
 for BUILD_TYPE in Release Debug; do
     info "Testing with BUILD_TYPE=$BUILD_TYPE"
-    
+
     # Configure
     info "Configuring CMake..."
     cmake -B "$ROOT_DIR/build" \
         -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
         -DLIBSVM_BUILD_APPS=ON \
         -DLIBSVM_BUILD_EXAMPLES=OFF
-    
+
     # Build
     info "Building..."
     cmake --build "$ROOT_DIR/build" --config $BUILD_TYPE
-    
+
     # Test svm-train
     info "Testing svm-train..."
     "$ROOT_DIR/build/bin/svm-train" \
         "$ROOT_DIR/examples/data/heart_scale" \
         "$ROOT_DIR/build/heart_scale.model"
-    
+
     # Test svm-predict
     info "Testing svm-predict..."
     "$ROOT_DIR/build/bin/svm-predict" \
         "$ROOT_DIR/examples/data/heart_scale" \
         "$ROOT_DIR/build/heart_scale.model" \
         "$ROOT_DIR/build/heart_scale.output"
-    
+
     # Test svm-scale
     info "Testing svm-scale..."
     "$ROOT_DIR/build/bin/svm-scale" \
         -l -1 -u 1 \
         "$ROOT_DIR/examples/data/heart_scale" \
-        > "$ROOT_DIR/build/heart_scale.scaled"
-    
+        >"$ROOT_DIR/build/heart_scale.scaled"
+
     # Verify outputs
     info "Verifying outputs..."
     if [ ! -f "$ROOT_DIR/build/heart_scale.model" ]; then
@@ -94,7 +94,7 @@ for BUILD_TYPE in Release Debug; do
     if [ ! -f "$ROOT_DIR/build/heart_scale.output" ]; then
         fail "Prediction output not created"
     fi
-    
+
     pass "Build and test completed for $BUILD_TYPE"
     cleanup
 done
@@ -142,7 +142,7 @@ export CC=clang-18
 export CXX=clang++-18
 
 # Check if clang-18 is available
-if ! command -v clang-18 &> /dev/null; then
+if ! command -v clang-18 &>/dev/null; then
     echo -e "${YELLOW}⚠ Clang-18 not found, skipping...${NC}"
 else
     info "Configuring CMake with Clang-18..."
@@ -227,7 +227,7 @@ echo "=========================================="
 
 cleanup
 
-if command -v python3 &> /dev/null; then
+if command -v python3 &>/dev/null; then
     info "Building shared library for Python..."
     cmake -B "$ROOT_DIR/build" \
         -DCMAKE_BUILD_TYPE=Release \
@@ -236,7 +236,7 @@ if command -v python3 &> /dev/null; then
     cmake --build "$ROOT_DIR/build" --config Release
 
     info "Copying library to Python package..."
-    cp "$ROOT_DIR/build/lib/libsvm.so"* "$ROOT_DIR/bindings/python/libsvm/" 2>/dev/null || \
+    cp "$ROOT_DIR/build/lib/libsvm.so"* "$ROOT_DIR/bindings/python/libsvm/" 2>/dev/null ||
         cp "$ROOT_DIR/build/lib/libsvm.so" "$ROOT_DIR/bindings/python/libsvm/"
 
     info "Testing Python import..."
@@ -271,7 +271,7 @@ echo "=========================================="
 
 cleanup
 
-if command -v java &> /dev/null && command -v m4 &> /dev/null; then
+if command -v java &>/dev/null && command -v m4 &>/dev/null; then
     info "Configuring CMake for Java bindings..."
     cmake -B "$ROOT_DIR/build" \
         -DCMAKE_BUILD_TYPE=Release \
@@ -329,7 +329,7 @@ echo "=========================================="
 echo "Job 9: Static Analysis"
 echo "=========================================="
 
-if command -v cppcheck &> /dev/null; then
+if command -v cppcheck &>/dev/null; then
     info "Running cppcheck..."
     cppcheck --enable=warning,performance,portability \
         --suppress=missingIncludeSystem \
@@ -371,7 +371,7 @@ test -f "$ROOT_DIR/install/bin/svm-scale" || fail "svm-scale not installed"
 
 info "Testing find_package..."
 mkdir -p "$ROOT_DIR/test_project"
-cat > "$ROOT_DIR/test_project/CMakeLists.txt" << 'EOF'
+cat >"$ROOT_DIR/test_project/CMakeLists.txt" <<'EOF'
 cmake_minimum_required(VERSION 3.16)
 project(TestLibSVM)
 find_package(LibSVM REQUIRED)
@@ -379,7 +379,7 @@ add_executable(test_app test.cpp)
 target_link_libraries(test_app LibSVM::svm)
 EOF
 
-cat > "$ROOT_DIR/test_project/test.cpp" << 'EOF'
+cat >"$ROOT_DIR/test_project/test.cpp" <<'EOF'
 #include <svm.h>
 int main() { return 0; }
 EOF
@@ -402,7 +402,7 @@ echo "=========================================="
 
 cleanup
 
-if command -v lcov &> /dev/null; then
+if command -v lcov &>/dev/null; then
     info "Configuring CMake with coverage..."
     cmake -B "$ROOT_DIR/build" \
         -DCMAKE_BUILD_TYPE=Debug \

@@ -68,3 +68,5 @@ output
 output_file
 *.scale
 range
+
+install/

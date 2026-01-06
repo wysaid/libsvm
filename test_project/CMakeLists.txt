@@ -1,5 +1,0 @@
-cmake_minimum_required(VERSION 3.16)
-project(TestLibSVM)
-find_package(LibSVM REQUIRED)
-add_executable(test test.cpp)
-target_link_libraries(test LibSVM::svm)
