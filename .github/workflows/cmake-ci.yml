@@ -247,10 +247,11 @@ jobs:
         pip install numpy scipy
 
     - name: Build shared library
+      shell: bash
       run: |
-        cmake -B ${{github.workspace}}/build `
-          -DCMAKE_BUILD_TYPE=Release `
-          -DBUILD_SHARED_LIBS=ON `
+        cmake -B ${{github.workspace}}/build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_SHARED_LIBS=ON \
           -DLIBSVM_BUILD_PYTHON=ON
         cmake --build ${{github.workspace}}/build --config Release
 
@@ -330,9 +331,10 @@ jobs:
       run: choco install m4
 
     - name: Configure CMake
+      shell: bash
       run: |
-        cmake -B ${{github.workspace}}/build `
-          -DCMAKE_BUILD_TYPE=Release `
+        cmake -B ${{github.workspace}}/build \
+          -DCMAKE_BUILD_TYPE=Release \
           -DLIBSVM_BUILD_JAVA=ON
 
     - name: Build Java bindings
@@ -374,9 +376,10 @@ jobs:
         echo "CMAKE_PREFIX_PATH=$(brew --prefix qt@5)" >> $GITHUB_ENV
 
     - name: Configure CMake
+      shell: bash
       run: |
-        cmake -B ${{github.workspace}}/build `
-          -DCMAKE_BUILD_TYPE=Release `
+        cmake -B ${{github.workspace}}/build \
+          -DCMAKE_BUILD_TYPE=Release \
           -DLIBSVM_BUILD_EXAMPLES=ON
 
     - name: Build svm-toy
