@@ -37,10 +37,6 @@ jobs:
             build_type: Release
             cc: clang-18
             cxx: clang++-18
-          # Test with older macOS
-          - os: macos-13
-            compiler: default
-            build_type: Release
 
     steps:
     - uses: actions/checkout@v4
@@ -61,66 +57,66 @@ jobs:
     - name: Configure CMake
       shell: bash
       run: |
-        cmake -B ${{github.workspace}}/build \
+        cmake -B build \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
           -DLIBSVM_BUILD_APPS=ON \
           -DLIBSVM_BUILD_EXAMPLES=OFF
 
     - name: Build
       shell: bash
-      run: cmake --build ${{github.workspace}}/build --config ${{ matrix.build_type }}
+      run: cmake --build build --config ${{ matrix.build_type }}
 
     - name: Test - svm-train
       shell: bash
       run: |
         if [ "${{ runner.os }}" == "Windows" ]; then
-          ${{github.workspace}}/build/bin/${{ matrix.build_type }}/svm-train.exe \
-            ${{github.workspace}}/examples/data/heart_scale \
-            ${{github.workspace}}/build/heart_scale.model
+          ./build/bin/${{ matrix.build_type }}/svm-train.exe \
+            ./examples/data/heart_scale \
+            ./build/heart_scale.model
         else
-          ${{github.workspace}}/build/bin/svm-train \
-            ${{github.workspace}}/examples/data/heart_scale \
-            ${{github.workspace}}/build/heart_scale.model
+          ./build/bin/svm-train \
+            ./examples/data/heart_scale \
+            ./build/heart_scale.model
         fi
 
     - name: Test - svm-predict
       shell: bash
       run: |
         if [ "${{ runner.os }}" == "Windows" ]; then
-          ${{github.workspace}}/build/bin/${{ matrix.build_type }}/svm-predict.exe \
-            ${{github.workspace}}/examples/data/heart_scale \
-            ${{github.workspace}}/build/heart_scale.model \
-            ${{github.workspace}}/build/heart_scale.output
+          ./build/bin/${{ matrix.build_type }}/svm-predict.exe \
+            ./examples/data/heart_scale \
+            ./build/heart_scale.model \
+            ./build/heart_scale.output
         else
-          ${{github.workspace}}/build/bin/svm-predict \
-            ${{github.workspace}}/examples/data/heart_scale \
-            ${{github.workspace}}/build/heart_scale.model \
-            ${{github.workspace}}/build/heart_scale.output
+          ./build/bin/svm-predict \
+            ./examples/data/heart_scale \
+            ./build/heart_scale.model \
+            ./build/heart_scale.output
         fi
 
     - name: Test - svm-scale
       shell: bash
       run: |
         if [ "${{ runner.os }}" == "Windows" ]; then
-          ${{github.workspace}}/build/bin/${{ matrix.build_type }}/svm-scale.exe \
+          ./build/bin/${{ matrix.build_type }}/svm-scale.exe \
             -l -1 -u 1 \
-            ${{github.workspace}}/examples/data/heart_scale \
-            > ${{github.workspace}}/build/heart_scale.scaled
+            ./examples/data/heart_scale \
+            > ./build/heart_scale.scaled
         else
-          ${{github.workspace}}/build/bin/svm-scale \
+          ./build/bin/svm-scale \
             -l -1 -u 1 \
-            ${{github.workspace}}/examples/data/heart_scale \
-            > ${{github.workspace}}/build/heart_scale.scaled
+            ./examples/data/heart_scale \
+            > ./build/heart_scale.scaled
         fi
 
     - name: Verify outputs
       shell: bash
       run: |
-        if [ ! -f "${{github.workspace}}/build/heart_scale.model" ]; then
+        if [ ! -f "./build/heart_scale.model" ]; then
           echo "Error: Model file not created"
           exit 1
         fi
-        if [ ! -f "${{github.workspace}}/build/heart_scale.output" ]; then
+        if [ ! -f "./build/heart_scale.output" ]; then
           echo "Error: Prediction output not created"
           exit 1
         fi
@@ -149,20 +145,20 @@ jobs:
       env:
         MSYS2_ARG_CONV_EXCL: "*"
       run: |
-        cmake -B ${{github.workspace}}/build \
+        cmake -B build \
           -DCMAKE_BUILD_TYPE=Release \
           -DLIBSVM_ENABLE_OPENMP=ON \
           -DLIBSVM_BUILD_APPS=ON
 
     - name: Build
       shell: bash
-      run: cmake --build ${{github.workspace}}/build --config Release
+      run: cmake --build build --config Release
 
     - name: Test with OpenMP
       shell: bash
       run: |
-        ${{github.workspace}}/build/bin/svm-train \
-          ${{github.workspace}}/examples/data/heart_scale
+        ./build/bin/svm-train \
+          ./examples/data/heart_scale
 
   # ============================================================================
   # Shared Library Build
@@ -180,25 +176,25 @@ jobs:
     - name: Configure CMake
       shell: bash
       run: |
-        cmake -B ${{github.workspace}}/build \
+        cmake -B build \
           -DCMAKE_BUILD_TYPE=Release \
           -DBUILD_SHARED_LIBS=ON \
           -DLIBSVM_BUILD_APPS=ON
 
     - name: Build
       shell: bash
-      run: cmake --build ${{github.workspace}}/build --config Release
+      run: cmake --build build --config Release
 
     - name: Verify shared library
       shell: bash
       run: |
         if [ "${{ runner.os }}" == "macOS" ]; then
-          test -f "${{github.workspace}}/build/lib/libsvm.dylib" || exit 1
+          test -f "./build/lib/libsvm.dylib" || exit 1
         elif [ "${{ runner.os }}" == "Windows" ]; then
-          test -f "${{github.workspace}}/build/bin/Release/svm.dll" || \
-          test -f "${{github.workspace}}/build/bin/svm.dll" || exit 1
+          test -f "./build/bin/Release/svm.dll" || \
+          test -f "./build/bin/svm.dll" || exit 1
         else
-          test -f "${{github.workspace}}/build/lib/libsvm.so" || exit 1
+          test -f "./build/lib/libsvm.so" || exit 1
         fi
         echo "Shared library built successfully"
 
@@ -230,36 +226,36 @@ jobs:
     - name: Build shared library
       shell: bash
       run: |
-        cmake -B ${{github.workspace}}/build \
+        cmake -B build \
           -DCMAKE_BUILD_TYPE=Release \
           -DBUILD_SHARED_LIBS=ON \
           -DLIBSVM_BUILD_PYTHON=ON
-        cmake --build ${{github.workspace}}/build --config Release
+        cmake --build build --config Release
 
     - name: Copy library to Python package
       shell: bash
       run: |
         if [ "${{ runner.os }}" == "macOS" ]; then
-          cp ${{github.workspace}}/build/lib/libsvm*.dylib ${{github.workspace}}/bindings/python/libsvm/ 2>/dev/null || \
-          cp ${{github.workspace}}/build/lib/libsvm.dylib ${{github.workspace}}/bindings/python/libsvm/
+          cp ./build/lib/libsvm*.dylib ./bindings/python/libsvm/ 2>/dev/null || \
+          cp ./build/lib/libsvm.dylib ./bindings/python/libsvm/
         elif [ "${{ runner.os }}" == "Windows" ]; then
-          cp ${{github.workspace}}/build/bin/Release/svm.dll ${{github.workspace}}/bindings/python/libsvm/ 2>/dev/null || \
-          cp ${{github.workspace}}/build/bin/svm.dll ${{github.workspace}}/bindings/python/libsvm/ || { echo "svm.dll not found"; exit 1; }
+          cp ./build/bin/Release/svm.dll ./bindings/python/libsvm/ 2>/dev/null || \
+          cp ./build/bin/svm.dll ./bindings/python/libsvm/ || { echo "svm.dll not found"; exit 1; }
         else
-          cp ${{github.workspace}}/build/lib/libsvm.so* ${{github.workspace}}/bindings/python/libsvm/ 2>/dev/null || \
-          cp ${{github.workspace}}/build/lib/libsvm.so ${{github.workspace}}/bindings/python/libsvm/
+          cp ./build/lib/libsvm.so* ./bindings/python/libsvm/ 2>/dev/null || \
+          cp ./build/lib/libsvm.so ./bindings/python/libsvm/
         fi
 
     - name: Test Python import
       shell: bash
       run: |
-        cd ${{github.workspace}}/bindings/python
+        cd ./bindings/python
         python -c "from libsvm import svmutil; print('Python bindings import successful')"
 
     - name: Test Python training
       shell: bash
       run: |
-        cd ${{github.workspace}}/bindings/python
+        cd ./bindings/python
         python -c "
         from libsvm import svmutil
         import sys
@@ -316,18 +312,18 @@ jobs:
 
     - name: Configure CMake
       shell: bash
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release -DLIBSVM_BUILD_JAVA=ON
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DLIBSVM_BUILD_JAVA=ON
 
     - name: Build Java bindings
       shell: bash
-      run: cmake --build ${{github.workspace}}/build --target java-bindings --config Release
+      run: cmake --build build --target java-bindings --config Release
 
     - name: Test Java bindings
       shell: bash
       run: |
-        java -classpath ${{github.workspace}}/build/bindings/java/libsvm.jar svm_train \
-          ${{github.workspace}}/examples/data/heart_scale \
-          ${{github.workspace}}/build/heart_scale_java.model
+        java -classpath ./build/bindings/java/libsvm.jar svm_train \
+          ./examples/data/heart_scale \
+          ./build/heart_scale_java.model
 
   # ============================================================================
   # Qt/svm-toy Example
@@ -359,15 +355,15 @@ jobs:
 
     - name: Configure CMake
       shell: bash
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release -DLIBSVM_BUILD_EXAMPLES=ON
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DLIBSVM_BUILD_EXAMPLES=ON
 
     - name: Build svm-toy
       shell: bash
-      run: cmake --build ${{github.workspace}}/build --target svm-toy
+      run: cmake --build build --target svm-toy
 
     - name: Verify svm-toy binary
       shell: bash
-      run: test -f ${{github.workspace}}/build/bin/svm-toy
+      run: test -f ./build/bin/svm-toy
 
   # ============================================================================
   # Static Analysis
@@ -410,26 +406,26 @@ jobs:
       env:
         MSYS2_ARG_CONV_EXCL: "*"
       run: |
-        cmake -B ${{github.workspace}}/build \
+        cmake -B build \
           -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/install \
+          -DCMAKE_INSTALL_PREFIX=./install \
           -DLIBSVM_BUILD_APPS=ON
 
     - name: Build
       shell: bash
-      run: cmake --build ${{github.workspace}}/build
+      run: cmake --build build
 
     - name: Install
       shell: bash
-      run: cmake --install ${{github.workspace}}/build
+      run: cmake --install build
 
     - name: Verify installation
       shell: bash
       run: |
-        test -f ${{github.workspace}}/install/include/svm.h
-        test -f ${{github.workspace}}/install/bin/svm-train
-        test -f ${{github.workspace}}/install/bin/svm-predict
-        test -f ${{github.workspace}}/install/bin/svm-scale
+        test -f ./install/include/svm.h
+        test -f ./install/bin/svm-train
+        test -f ./install/bin/svm-predict
+        test -f ./install/bin/svm-scale
         echo "Installation verification successful"
 
     - name: Test find_package
@@ -437,22 +433,22 @@ jobs:
       env:
         MSYS2_ARG_CONV_EXCL: "*"
       run: |
-        mkdir -p ${{github.workspace}}/test_project
-        cat > ${{github.workspace}}/test_project/CMakeLists.txt << 'EOF'
+        mkdir -p test_project
+        cat > test_project/CMakeLists.txt << 'EOF'
         cmake_minimum_required(VERSION 3.16)
         project(TestLibSVM)
         find_package(LibSVM REQUIRED)
         add_executable(test_app test.cpp)
         target_link_libraries(test_app LibSVM::svm)
         EOF
-        cat > ${{github.workspace}}/test_project/test.cpp << 'EOF'
+        cat > test_project/test.cpp << 'EOF'
         #include <svm.h>
         int main() { return 0; }
         EOF
-        cmake -B ${{github.workspace}}/test_project/build \
-          -S ${{github.workspace}}/test_project \
-          -DCMAKE_PREFIX_PATH=${{github.workspace}}/install
-        cmake --build ${{github.workspace}}/test_project/build
+        cmake -B test_project/build \
+          -S test_project \
+          -DCMAKE_PREFIX_PATH=./install
+        cmake --build test_project/build
 
   # ============================================================================
   # Code Coverage (Linux only)
@@ -475,7 +471,7 @@ jobs:
       env:
         MSYS2_ARG_CONV_EXCL: "*"
       run: |
-        cmake -B ${{github.workspace}}/build \
+        cmake -B build \
           -DCMAKE_BUILD_TYPE=Debug \
           -DCMAKE_CXX_FLAGS="--coverage" \
           -DCMAKE_C_FLAGS="--coverage" \
@@ -483,23 +479,23 @@ jobs:
 
     - name: Build
       shell: bash
-      run: cmake --build ${{github.workspace}}/build
+      run: cmake --build build
 
     - name: Run tests
       shell: bash
       run: |
-        ${{github.workspace}}/build/bin/svm-train \
-          ${{github.workspace}}/examples/data/heart_scale \
-          ${{github.workspace}}/build/heart_scale.model
-        ${{github.workspace}}/build/bin/svm-predict \
-          ${{github.workspace}}/examples/data/heart_scale \
-          ${{github.workspace}}/build/heart_scale.model \
-          ${{github.workspace}}/build/heart_scale.output
+        ./build/bin/svm-train \
+          ./examples/data/heart_scale \
+          ./build/heart_scale.model
+        ./build/bin/svm-predict \
+          ./examples/data/heart_scale \
+          ./build/heart_scale.model \
+          ./build/heart_scale.output
 
     - name: Generate coverage report
       shell: bash
       run: |
-        lcov --capture --directory ${{github.workspace}}/build \
+        lcov --capture --directory ./build \
           --output-file coverage.info
         lcov --remove coverage.info '/usr/*' '*/test/*' \
           --output-file coverage.info --ignore-errors unused
