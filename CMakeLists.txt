@@ -115,16 +115,12 @@ add_subdirectory(bindings)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-# Install headers
-install(FILES src/svm.h
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-
 # Generate and install CMake config files
 configure_package_config_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/LibSVMConfig.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/LibSVMConfig.cmake
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/LibSVM
+    PATH_VARS CMAKE_INSTALL_INCLUDEDIR
 )
 
 write_basic_package_version_file(
