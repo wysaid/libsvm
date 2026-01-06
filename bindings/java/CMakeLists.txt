@@ -88,9 +88,27 @@ set(JAVA_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/java-build)
 file(MAKE_DIRECTORY ${JAVA_BUILD_DIR})
 file(MAKE_DIRECTORY ${JAVA_BUILD_DIR}/libsvm)
 
+# List Java source files for dependency tracking
+set(JAVA_LIBSVM_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/libsvm/svm_model.java
+    ${CMAKE_CURRENT_SOURCE_DIR}/libsvm/svm_node.java
+    ${CMAKE_CURRENT_SOURCE_DIR}/libsvm/svm_parameter.java
+    ${CMAKE_CURRENT_SOURCE_DIR}/libsvm/svm_print_interface.java
+    ${CMAKE_CURRENT_SOURCE_DIR}/libsvm/svm_problem.java
+)
+
+set(JAVA_APP_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/svm_train.java
+    ${CMAKE_CURRENT_SOURCE_DIR}/svm_predict.java
+    ${CMAKE_CURRENT_SOURCE_DIR}/svm_scale.java
+    ${CMAKE_CURRENT_SOURCE_DIR}/svm_toy.java
+)
+
 # Custom target to compile Java and create JAR
 add_custom_target(java-bindings ALL
     DEPENDS generate-svm-java
+            ${JAVA_LIBSVM_SOURCES}
+            ${JAVA_APP_SOURCES}
     COMMAND ${CMAKE_COMMAND} -E copy_directory 
         ${CMAKE_CURRENT_SOURCE_DIR}/libsvm 
         ${JAVA_BUILD_DIR}/libsvm

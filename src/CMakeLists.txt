@@ -40,7 +40,7 @@ endif()
 # ============================================================================
 
 if(LIBSVM_ENABLE_OPENMP AND OpenMP_CXX_FOUND)
-    target_link_libraries(svm PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(svm PRIVATE OpenMP::OpenMP_CXX)
 endif()
 
 # ============================================================================

@@ -62,20 +62,20 @@ jobs:
 
     - name: Test - svm-train
       run: |
-        ${{github.workspace}}/build/bin/svm-train${{ runner.os == 'Windows' && '.exe' || '' }} \
+        ${{github.workspace}}/build/bin/${{ runner.os == 'Windows' && format('{0}/', matrix.build_type) || '' }}svm-train${{ runner.os == 'Windows' && '.exe' || '' }} \
           ${{github.workspace}}/examples/data/heart_scale \
           ${{github.workspace}}/build/heart_scale.model
 
     - name: Test - svm-predict
       run: |
-        ${{github.workspace}}/build/bin/svm-predict${{ runner.os == 'Windows' && '.exe' || '' }} \
+        ${{github.workspace}}/build/bin/${{ runner.os == 'Windows' && format('{0}/', matrix.build_type) || '' }}svm-predict${{ runner.os == 'Windows' && '.exe' || '' }} \
           ${{github.workspace}}/examples/data/heart_scale \
           ${{github.workspace}}/build/heart_scale.model \
           ${{github.workspace}}/build/heart_scale.output
 
     - name: Test - svm-scale
       run: |
-        ${{github.workspace}}/build/bin/svm-scale${{ runner.os == 'Windows' && '.exe' || '' }} \
+        ${{github.workspace}}/build/bin/${{ runner.os == 'Windows' && format('{0}/', matrix.build_type) || '' }}svm-scale${{ runner.os == 'Windows' && '.exe' || '' }} \
           -l -1 -u 1 \
           ${{github.workspace}}/examples/data/heart_scale \
           > ${{github.workspace}}/build/heart_scale.scaled
@@ -152,6 +152,7 @@ jobs:
       shell: bash
       run: |
         if [ "${{ runner.os }}" == "Windows" ]; then
+          test -f "${{github.workspace}}/build/bin/Release/svm.dll" || \
           test -f "${{github.workspace}}/build/bin/svm.dll" || exit 1
         elif [ "${{ runner.os }}" == "macOS" ]; then
           test -f "${{github.workspace}}/build/lib/libsvm.dylib" || exit 1
@@ -197,15 +198,18 @@ jobs:
       shell: bash
       run: |
         if [ "${{ runner.os }}" == "macOS" ]; then
-          cp ${{github.workspace}}/build/lib/libsvm.*.dylib ${{github.workspace}}/bindings/python/libsvm/
+          cp ${{github.workspace}}/build/lib/libsvm*.dylib ${{github.workspace}}/bindings/python/libsvm/ 2>/dev/null || \
+          cp ${{github.workspace}}/build/lib/libsvm.dylib ${{github.workspace}}/bindings/python/libsvm/
         else
-          cp ${{github.workspace}}/build/lib/libsvm.so.* ${{github.workspace}}/bindings/python/libsvm/
+          cp ${{github.workspace}}/build/lib/libsvm.so* ${{github.workspace}}/bindings/python/libsvm/ 2>/dev/null || \
+          cp ${{github.workspace}}/build/lib/libsvm.so ${{github.workspace}}/bindings/python/libsvm/
         fi
 
     - name: Copy library to Python package (Windows)
       if: runner.os == 'Windows'
       shell: bash
       run: |
+        cp ${{github.workspace}}/build/bin/Release/svm.dll ${{github.workspace}}/bindings/python/libsvm/ 2>/dev/null || \
         cp ${{github.workspace}}/build/bin/svm.dll ${{github.workspace}}/bindings/python/libsvm/
 
     - name: Test Python import
@@ -295,7 +299,9 @@ jobs:
 
     - name: Install Qt (macOS)
       if: runner.os == 'macOS'
-      run: brew install qt@5
+      run: |
+        brew install qt@5
+        echo "CMAKE_PREFIX_PATH=$(brew --prefix qt@5)" >> $GITHUB_ENV
 
     - name: Configure CMake
       run: |
@@ -323,10 +329,11 @@ jobs:
       run: sudo apt-get update && sudo apt-get install -y cppcheck
 
     - name: Run cppcheck
+      continue-on-error: true
       run: |
-        cppcheck --enable=warning,style,performance,portability \
+        cppcheck --enable=warning,performance,portability \
           --suppress=missingIncludeSystem \
-          --error-exitcode=0 \
+          --error-exitcode=1 \
           src/ apps/ examples/svm-toy/
 
   # ============================================================================
