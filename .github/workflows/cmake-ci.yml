@@ -318,6 +318,18 @@ jobs:
       shell: bash
       run: cmake --build build --config Release
 
+    - name: Verify JAR file
+      shell: bash
+      run: |
+        echo "Checking for JAR file..."
+        ls -la ./build/bindings/java/ || true
+        if [ ! -f "./build/bindings/java/libsvm.jar" ]; then
+          echo "Error: libsvm.jar not found"
+          exit 1
+        fi
+        echo "JAR file contents:"
+        jar tf ./build/bindings/java/libsvm.jar | head -20
+
     - name: Test Java bindings
       shell: bash
       run: |
