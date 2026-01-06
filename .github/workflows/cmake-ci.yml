@@ -9,6 +9,7 @@ on:
 
 env:
   BUILD_TYPE: Release
+  MSYS_NO_PATHCONV: 1  # Prevent Git Bash path conversion on Windows
 
 jobs:
   # ============================================================================
@@ -28,14 +29,14 @@ jobs:
           - os: ubuntu-latest
             compiler: gcc
             build_type: Release
-            cc: gcc-11
-            cxx: g++-11
+            cc: gcc-13
+            cxx: g++-13
           # Test with Clang on Linux
           - os: ubuntu-latest
             compiler: clang
             build_type: Release
-            cc: clang-14
-            cxx: clang++-14
+            cc: clang-18
+            cxx: clang++-18
           # Test with older macOS
           - os: macos-13
             compiler: default
@@ -469,7 +470,7 @@ jobs:
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
-      continue-on-error: true
       with:
         files: ./coverage.info
         fail_ci_if_error: false
+        token: ${{ secrets.CODECOV_TOKEN }}

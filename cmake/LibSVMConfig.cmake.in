@@ -26,11 +26,11 @@ include(CMakeFindDependencyMacro)
 # Include the exported targets
 include("${CMAKE_CURRENT_LIST_DIR}/LibSVMTargets.cmake")
 
-# Set variables for compatibility
-get_target_property(LibSVM_INCLUDE_DIRS LibSVM::svm INTERFACE_INCLUDE_DIRECTORIES)
-if(NOT LibSVM_INCLUDE_DIRS OR LibSVM_INCLUDE_DIRS STREQUAL "LibSVM_INCLUDE_DIRS-NOTFOUND")
-    set(LibSVM_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_INCLUDEDIR@")
-endif()
+# Set variables for backward compatibility
+# Note: When using target_link_libraries(target LibSVM::svm), 
+# include directories are automatically propagated.
+# These variables are provided for projects that don't use imported targets.
+set(LibSVM_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_INCLUDEDIR@")
 set(LibSVM_LIBRARIES LibSVM::svm)
 set(LibSVM_VERSION "@PROJECT_VERSION@")
 

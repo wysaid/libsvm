@@ -4,19 +4,40 @@ This document records major changes and developments from the original libsvm co
 
 ---
 
-## 2026-01-06: Python Wheel Build and CI Fixes
+## 2026-01-06: Critical CI Fixes - Path Conversion, Compilers, and CMake Export
 
-Fixed critical path issues in Python wheel build workflow and setup.py configuration.
+Fixed three critical issues preventing CI from passing.
 
-#### Python Setup Fixes
-- Fixed source file paths in setup.py to correctly reference `../../src/` directory
-- Fixed COPYRIGHT file path to `../../COPYRIGHT`
-- Ensured cpp-source directory creation works properly for pip/wheel builds
+#### Issue 1: Windows Git Bash Path Conversion
+**Problem**: Git Bash on Windows automatically converts Unix-like paths, causing CMake errors:
+- Input: `D:/a/libsvm/libsvm`
+- Converted to: `D:alibsvmlibsvm` (slashes removed)
+- Error: `The source directory "D:alibsvmlibsvm/build/..." does not exist`
 
-#### Wheel Workflow Fixes
-- Corrected Python bindings path from `python/` to `bindings/python/` in wheel.yml
-- Fixed artifact upload path to match new directory structure
-- Added conditional execution for Codecov upload (only when token is configured)
+**Root Cause**: MSYS2 automatic path conversion in Git Bash for Windows.
+
+**Solution**: Added `MSYS_NO_PATHCONV: 1` to workflow environment variables to disable automatic path conversion.
+
+#### Issue 2: Ubuntu Compiler Version Mismatch
+**Problem**: Configured compilers (`gcc-11`, `clang-14`) don't exist on ubuntu-latest (24.04):
+- Error: `Could not find compiler set in environment variable CC: gcc-11`
+
+**Solution**: Updated to compilers available on Ubuntu 24.04:
+- `gcc-11` → `gcc-13`
+- `clang-14` → `clang-18`
+
+#### Issue 3: CMake Export Missing Include Directories
+**Problem**: `find_package(LibSVM)` succeeds but compilation fails:
+- Error: `fatal error: svm.h: No such file or directory`
+- Root cause: Generated `LibSVMTargets.cmake` lacked `INTERFACE_INCLUDE_DIRECTORIES` property
+
+**Analysis**: The `install(TARGETS)` command wasn't exporting include directory information to the imported target.
+
+**Solution**: Added `INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}` to `install(TARGETS)` in `src/CMakeLists.txt`. This directive:
+1. Automatically populates `INTERFACE_INCLUDE_DIRECTORIES` in generated `LibSVMTargets.cmake`
+2. Ensures downstream projects using `target_link_libraries(LibSVM::svm)` get correct include paths
+
+**Verification**: Tested locally with installation and `find_package()` - compilation successful.
 
 ---
 
