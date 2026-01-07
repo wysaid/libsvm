@@ -40,34 +40,34 @@ FAILED=0
 for TEST_NAME in $TEST_NAMES; do
     CURRENT_EXE="$BIN_DIR/compare_current_$TEST_NAME"
     UPSTREAM_EXE="$BIN_DIR/compare_upstream_$TEST_NAME"
-    
+
     if [ ! -x "$CURRENT_EXE" ] || [ ! -x "$UPSTREAM_EXE" ]; then
         echo -e "${YELLOW}⚠ Skipping $TEST_NAME: executable not found${NC}"
         continue
     fi
-    
+
     ((TOTAL++))
-    
+
     echo -n "Testing $TEST_NAME... "
-    
+
     # Run both versions
     CURRENT_OUT="$OUTPUT_DIR/current_$TEST_NAME.txt"
     UPSTREAM_OUT="$OUTPUT_DIR/upstream_$TEST_NAME.txt"
-    
-    if ! "$CURRENT_EXE" > "$CURRENT_OUT" 2>&1; then
+
+    if ! "$CURRENT_EXE" >"$CURRENT_OUT" 2>&1; then
         echo -e "${RED}FAIL (current version crashed)${NC}"
         ((FAILED++))
         continue
     fi
-    
-    if ! "$UPSTREAM_EXE" > "$UPSTREAM_OUT" 2>&1; then
+
+    if ! "$UPSTREAM_EXE" >"$UPSTREAM_OUT" 2>&1; then
         echo -e "${RED}FAIL (upstream version crashed)${NC}"
         ((FAILED++))
         continue
     fi
-    
+
     # Compare outputs
-    if diff -q "$CURRENT_OUT" "$UPSTREAM_OUT" > /dev/null 2>&1; then
+    if diff -q "$CURRENT_OUT" "$UPSTREAM_OUT" >/dev/null 2>&1; then
         echo -e "${GREEN}PASS${NC}"
         ((PASSED++))
     else

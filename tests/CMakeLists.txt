@@ -2,6 +2,10 @@
 # LibSVM Test Suite
 # ============================================================================
 
+# Testing Options
+option(LIBSVM_ENABLE_ASAN "Enable AddressSanitizer for memory error detection" OFF)
+option(LIBSVM_ENABLE_UBSAN "Enable UndefinedBehaviorSanitizer for undefined behavior detection" OFF)
+
 include(FetchContent)
 
 # ============================================================================
@@ -59,6 +63,18 @@ target_compile_definitions(unit_tests PRIVATE
     TEST_DATA_DIR="${TEST_DATA_DIR}"
 )
 
+# Enable sanitizers for unit tests
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    if(LIBSVM_ENABLE_ASAN)
+        target_compile_options(unit_tests PRIVATE -fsanitize=address -fno-omit-frame-pointer -g)
+        target_link_options(unit_tests PRIVATE -fsanitize=address)
+    endif()
+    if(LIBSVM_ENABLE_UBSAN)
+        target_compile_options(unit_tests PRIVATE -fsanitize=undefined -fno-omit-frame-pointer -g)
+        target_link_options(unit_tests PRIVATE -fsanitize=undefined)
+    endif()
+endif()
+
 gtest_discover_tests(unit_tests)
 
 # ============================================================================
@@ -88,6 +104,18 @@ target_compile_definitions(integration_tests PRIVATE
     TEST_DATA_DIR="${CMAKE_CURRENT_BINARY_DIR}/data"
 )
 
+# Enable sanitizers for integration tests
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    if(LIBSVM_ENABLE_ASAN)
+        target_compile_options(integration_tests PRIVATE -fsanitize=address -fno-omit-frame-pointer -g)
+        target_link_options(integration_tests PRIVATE -fsanitize=address)
+    endif()
+    if(LIBSVM_ENABLE_UBSAN)
+        target_compile_options(integration_tests PRIVATE -fsanitize=undefined -fno-omit-frame-pointer -g)
+        target_link_options(integration_tests PRIVATE -fsanitize=undefined)
+    endif()
+endif()
+
 gtest_discover_tests(integration_tests)
 
 # ============================================================================
@@ -115,11 +143,19 @@ target_compile_definitions(memory_tests PRIVATE
     TEST_DATA_DIR="${CMAKE_CURRENT_BINARY_DIR}/data"
 )
 
-# Enable AddressSanitizer for memory tests if available
+# Memory tests should ALWAYS use sanitizers when available
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     if(LIBSVM_ENABLE_ASAN)
-        target_compile_options(memory_tests PRIVATE -fsanitize=address -fno-omit-frame-pointer)
+        target_compile_options(memory_tests PRIVATE -fsanitize=address -fno-omit-frame-pointer -g)
         target_link_options(memory_tests PRIVATE -fsanitize=address)
+        message(STATUS "Memory tests: AddressSanitizer enabled")
+    else()
+        message(WARNING "Memory tests: AddressSanitizer NOT enabled - some issues may not be detected")
+    endif()
+    if(LIBSVM_ENABLE_UBSAN)
+        target_compile_options(memory_tests PRIVATE -fsanitize=undefined -fno-omit-frame-pointer -g)
+        target_link_options(memory_tests PRIVATE -fsanitize=undefined)
+        message(STATUS "Memory tests: UndefinedBehaviorSanitizer enabled")
     endif()
 endif()
 

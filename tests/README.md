@@ -7,6 +7,12 @@ This directory contains comprehensive unit tests, integration tests, memory test
 - CMake 3.16+
 - C++17 compatible compiler
 - GoogleTest (automatically downloaded via FetchContent)
+- GCC or Clang (for sanitizer support)
+
+## Quick Links
+
+- **[Memory Testing Guide](MEMORY_TESTING.md)** - Learn about memory leak and overflow detection
+- **[Comparison Testing Guide](comparison/README.md)** - How to test against upstream libsvm
 
 ## Building Tests
 
@@ -26,6 +32,7 @@ The easiest way to run tests is using the provided test runner script:
 
 ```bash
 # Run all standard tests (unit + integration + memory)
+# Sanitizers are ENABLED BY DEFAULT for better error detection
 ./scripts/run_tests.sh
 
 # Run all tests including comparison tests
@@ -34,17 +41,19 @@ The easiest way to run tests is using the provided test runner script:
 # Run specific test categories
 ./scripts/run_tests.sh --unit           # Unit tests only
 ./scripts/run_tests.sh --integration    # Integration tests only
-./scripts/run_tests.sh --memory         # Memory tests only (with ASAN)
+./scripts/run_tests.sh --memory         # Memory tests (always with ASAN+UBSan)
 
 # Filter tests by name pattern
 ./scripts/run_tests.sh --filter "Kernel*"
 
-# Enable AddressSanitizer for all tests
-./scripts/run_tests.sh --sanitize
+# Disable sanitizers (not recommended except for performance testing)
+./scripts/run_tests.sh --no-sanitize
 
 # Show help
 ./scripts/run_tests.sh --help
 ```
+
+**Note**: Memory tests always run with AddressSanitizer and UBSan enabled, even with `--no-sanitize`, to ensure memory safety issues are caught.
 
 The test runner script automatically builds and runs tests with proper configuration.
 
