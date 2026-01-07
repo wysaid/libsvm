@@ -305,9 +305,10 @@ void restoreOutput() {
 
 std::string getTempFilePath(const std::string& suffix) {
     static int counter = 0;
-    std::string path = std::filesystem::temp_directory_path().string();
-    path += "/libsvm_test_" + std::to_string(counter++) + suffix;
-    return path;
+    std::filesystem::path temp_dir = std::filesystem::temp_directory_path();
+    std::filesystem::path file_path = temp_dir / ("libsvm_test_" + std::to_string(counter++) + suffix);
+    // Convert to generic path format (forward slashes) to avoid Windows path issues
+    return file_path.generic_string();
 }
 
 void deleteTempFile(const std::string& filepath) {
