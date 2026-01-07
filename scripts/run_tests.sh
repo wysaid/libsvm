@@ -395,8 +395,15 @@ fi
 # Set sanitizer options if enabled
 if [ "$USE_ASAN" = true ]; then
     # Comprehensive AddressSanitizer options
-    export ASAN_OPTIONS="detect_leaks=1:halt_on_error=0:allocator_may_return_null=1:check_initialization_order=1:detect_stack_use_after_return=1:strict_string_checks=1:detect_invalid_pointer_pairs=2:print_stats=1:atexit=1"
-    echo -e "${GREEN}🛡️  AddressSanitizer enabled with comprehensive checks${NC}"
+    # Note: LeakSanitizer (detect_leaks) is not supported on macOS
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        export ASAN_OPTIONS="detect_leaks=0:halt_on_error=0:allocator_may_return_null=1:check_initialization_order=1:detect_stack_use_after_return=1:strict_string_checks=1:detect_invalid_pointer_pairs=2:print_stats=1:atexit=1"
+        echo -e "${GREEN}🛡️  AddressSanitizer enabled with comprehensive checks${NC}"
+        echo -e "${YELLOW}⚠ Note: LeakSanitizer not available on macOS${NC}"
+    else
+        export ASAN_OPTIONS="detect_leaks=1:halt_on_error=0:allocator_may_return_null=1:check_initialization_order=1:detect_stack_use_after_return=1:strict_string_checks=1:detect_invalid_pointer_pairs=2:print_stats=1:atexit=1"
+        echo -e "${GREEN}🛡️  AddressSanitizer enabled with comprehensive checks${NC}"
+    fi
 fi
 
 if [ "$USE_UBSAN" = true ]; then
