@@ -128,56 +128,70 @@ gtest_discover_tests(memory_tests)
 # ============================================================================
 # Upstream Comparison Tests
 # ============================================================================
+# These tests compare output between current fork and upstream libsvm
+# by building and running separate executables for each version
 
-option(LIBSVM_BUILD_UPSTREAM_COMPARISON "Build upstream comparison tests" OFF)
+option(LIBSVM_BUILD_UPSTREAM_COMPARISON "Build upstream LibSVM comparison tests" OFF)
 
 if(LIBSVM_BUILD_UPSTREAM_COMPARISON)
-    # Check if upstream subtree exists
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/upstream_libsvm/svm.cpp")
+    # Upstream build directory (populated by scripts/run_tests.sh)
+    set(UPSTREAM_BUILD_DIR "${CMAKE_BINARY_DIR}/upstream_build")
+    set(UPSTREAM_INSTALL_DIR "${UPSTREAM_BUILD_DIR}/install")
+    
+    # Check if upstream library and headers are available
+    if(EXISTS "${UPSTREAM_INSTALL_DIR}/lib/libsvm.a" AND 
+       EXISTS "${UPSTREAM_INSTALL_DIR}/include/svm.h")
         message(STATUS "Building upstream comparison tests")
+        message(STATUS "  Upstream lib: ${UPSTREAM_INSTALL_DIR}/lib/libsvm.a")
+        message(STATUS "  Upstream include: ${UPSTREAM_INSTALL_DIR}/include")
         
-        # Build upstream library as a separate target
-        add_library(svm_upstream STATIC
-            upstream_libsvm/svm.cpp
-        )
-        target_include_directories(svm_upstream PUBLIC
-            ${CMAKE_CURRENT_SOURCE_DIR}/upstream_libsvm
-        )
-        
-        add_executable(upstream_comparison_tests
-            comparison/test_upstream_comparison.cpp
-            common/test_utils.cpp
+        # Import upstream library
+        add_library(svm_upstream STATIC IMPORTED)
+        set_target_properties(svm_upstream PROPERTIES
+            IMPORTED_LOCATION "${UPSTREAM_INSTALL_DIR}/lib/libsvm.a"
+            INTERFACE_INCLUDE_DIRECTORIES "${UPSTREAM_INSTALL_DIR}/include"
         )
         
-        target_include_directories(upstream_comparison_tests PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/common
+        # Get all test case source files
+        file(GLOB COMPARISON_TEST_SOURCES 
+            "${CMAKE_CURRENT_SOURCE_DIR}/comparison/test_cases/*.cpp")
+        
+        foreach(TEST_SOURCE ${COMPARISON_TEST_SOURCES})
+            get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
+            
+            # Build current version executable
+            add_executable(compare_current_${TEST_NAME}
+                ${TEST_SOURCE}
+            )
+            target_link_libraries(compare_current_${TEST_NAME} PRIVATE svm)
+            target_include_directories(compare_current_${TEST_NAME} PRIVATE
+                ${CMAKE_SOURCE_DIR}/src
+            )
+            set_target_properties(compare_current_${TEST_NAME} PROPERTIES
+                RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/comparison"
+            )
+            
+            # Build upstream version executable
+            add_executable(compare_upstream_${TEST_NAME}
+                ${TEST_SOURCE}
+            )
+            target_link_libraries(compare_upstream_${TEST_NAME} PRIVATE svm_upstream)
+            set_target_properties(compare_upstream_${TEST_NAME} PROPERTIES
+                RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/comparison"
+            )
+        endforeach()
+        
+        # Create a test that runs the comparison
+        add_test(NAME upstream_comparison
+            COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/comparison/compare_runner.sh
+                    ${CMAKE_BINARY_DIR}/bin/comparison
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         )
         
-        # Add upstream include path with higher priority
-        target_include_directories(upstream_comparison_tests BEFORE PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/upstream_libsvm
-        )
-        
-        # Add current src after upstream to avoid conflicts
-        target_include_directories(upstream_comparison_tests PRIVATE
-            ${CMAKE_SOURCE_DIR}/src
-        )
-        
-        target_link_libraries(upstream_comparison_tests PRIVATE
-            svm
-            svm_upstream
-            GTest::gtest
-            GTest::gtest_main
-        )
-        
-        target_compile_definitions(upstream_comparison_tests PRIVATE
-            TEST_DATA_DIR="${CMAKE_CURRENT_BINARY_DIR}/data"
-            UPSTREAM_AVAILABLE
-        )
-        
-        gtest_discover_tests(upstream_comparison_tests)
     else()
-        message(WARNING "Upstream libsvm not found. Run: git read-tree --prefix=tests/upstream_libsvm -u upstream")
+        message(WARNING "Upstream libsvm not found at ${UPSTREAM_INSTALL_DIR}")
+        message(WARNING "Run: ./scripts/run_tests.sh --comparison")
+        message(WARNING "This will automatically build upstream version")
     endif()
 endif()
 

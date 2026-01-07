@@ -199,10 +199,13 @@ fi
 
 # Function to setup upstream comparison
 function setupUpstreamComparison() {
-    UPSTREAM_DIR="tests/upstream_libsvm"
+    UPSTREAM_SOURCE_DIR="build/upstream_source"
+    UPSTREAM_BUILD_DIR="build/upstream_build"
+    UPSTREAM_INSTALL_DIR="$UPSTREAM_BUILD_DIR/install"
     
-    if [ -d "$UPSTREAM_DIR" ] && [ -f "$UPSTREAM_DIR/svm.cpp" ]; then
-        echo -e "${BLUE}Upstream source already exists at $UPSTREAM_DIR${NC}"
+    # Check if already built and installed
+    if [ -f "$UPSTREAM_INSTALL_DIR/lib/libsvm.a" ] && [ -f "$UPSTREAM_INSTALL_DIR/include/svm.h" ]; then
+        echo -e "${BLUE}Upstream build already exists at $UPSTREAM_BUILD_DIR${NC}"
         return 0
     fi
     
@@ -218,36 +221,66 @@ function setupUpstreamComparison() {
         return 1
     fi
     
-    # Create upstream directory
-    echo -e "${BLUE}Extracting upstream branch to $UPSTREAM_DIR...${NC}"
-    rm -rf "$UPSTREAM_DIR"
-    mkdir -p "$UPSTREAM_DIR"
+    # Step 1: Checkout upstream branch to temporary directory using git worktree
+    echo -e "${BLUE}Checking out upstream branch...${NC}"
+    mkdir -p build
     
-    # Use git show to extract files from upstream branch
-    # Get list of files from upstream branch
-    FILES=$(git ls-tree -r --name-only upstream)
+    # Clean up existing worktree if any
+    git worktree prune 2>/dev/null || true
+    if [ -d "$UPSTREAM_SOURCE_DIR" ]; then
+        git worktree remove "$UPSTREAM_SOURCE_DIR" -f 2>/dev/null || rm -rf "$UPSTREAM_SOURCE_DIR"
+    fi
     
-    # Extract each file
-    EXTRACT_COUNT=0
-    for file in $FILES; do
-        # Create directory structure
-        FILE_DIR=$(dirname "$file")
-        mkdir -p "$UPSTREAM_DIR/$FILE_DIR"
-        
-        # Extract file content
-        if git show "upstream:$file" > "$UPSTREAM_DIR/$file" 2>/dev/null; then
-            ((EXTRACT_COUNT++))
-        fi
-    done
-    
-    if [ $EXTRACT_COUNT -gt 0 ] && [ -f "$UPSTREAM_DIR/svm.cpp" ]; then
-        echo -e "${GREEN}✓ Upstream LibSVM source extracted ($EXTRACT_COUNT files)${NC}"
-        echo -e "${BLUE}The comparison tests will be built automatically by CMake${NC}"
-        return 0
-    else
-        echo -e "${RED}✗ Failed to extract upstream source${NC}"
+    # Add new worktree
+    if ! git worktree add "$UPSTREAM_SOURCE_DIR" upstream 2>&1; then
+        echo -e "${RED}✗ Failed to checkout upstream branch${NC}"
         return 1
     fi
+    
+    echo -e "${GREEN}✓ Upstream source checked out to $UPSTREAM_SOURCE_DIR${NC}"
+    
+    # Step 2: Build upstream version using Makefile
+    echo -e "${BLUE}Building upstream LibSVM with Makefile...${NC}"
+    pushd "$UPSTREAM_SOURCE_DIR" > /dev/null
+    
+    if [ ! -f "Makefile" ]; then
+        echo -e "${RED}✗ Makefile not found in upstream branch${NC}"
+        popd > /dev/null
+        return 1
+    fi
+    
+    # Clean and build
+    make clean &>/dev/null || true
+    if ! make lib -j$(detectCores); then
+        echo -e "${RED}✗ Failed to build upstream LibSVM${NC}"
+        popd > /dev/null
+        return 1
+    fi
+    
+    echo -e "${GREEN}✓ Upstream LibSVM built successfully${NC}"
+    popd > /dev/null
+    
+    # Step 3: Install library and headers to designated directory
+    echo -e "${BLUE}Installing upstream library and headers...${NC}"
+    mkdir -p "$UPSTREAM_INSTALL_DIR/lib"
+    mkdir -p "$UPSTREAM_INSTALL_DIR/include"
+    
+    # Copy static library (create if not exists)
+    if [ ! -f "$UPSTREAM_SOURCE_DIR/libsvm.a" ]; then
+        echo -e "${BLUE}Creating static library...${NC}"
+        pushd "$UPSTREAM_SOURCE_DIR" > /dev/null
+        ar rcs libsvm.a svm.o
+        popd > /dev/null
+    fi
+    
+    cp "$UPSTREAM_SOURCE_DIR/libsvm.a" "$UPSTREAM_INSTALL_DIR/lib/" || return 1
+    cp "$UPSTREAM_SOURCE_DIR/svm.h" "$UPSTREAM_INSTALL_DIR/include/" || return 1
+    
+    echo -e "${GREEN}✓ Upstream library installed to:${NC}"
+    echo -e "  ${BLUE}Library: $UPSTREAM_INSTALL_DIR/lib/libsvm.a${NC}"
+    echo -e "  ${BLUE}Header:  $UPSTREAM_INSTALL_DIR/include/svm.h${NC}"
+    
+    return 0
 }
 
 # Create build directory
@@ -430,15 +463,18 @@ if [ "$RUN_COMPARISON" = true ]; then
     echo -e "${GREEN}Running Comparison Tests${NC}"
     echo "==============================================="
     
-    # Check if comparison_tests executable exists
-    if [ ! -f "$COMPARISON_TEST_EXE" ]; then
-        echo -e "${YELLOW}⚠ Comparison test executable not found at $COMPARISON_TEST_EXE${NC}"
+    COMPARISON_BIN_DIR="$BUILD_DIR/bin/comparison"
+    COMPARISON_RUNNER="tests/comparison/compare_runner.sh"
+    
+    # Check if comparison binaries exist
+    if [ ! -d "$COMPARISON_BIN_DIR" ] || [ -z "$(ls -A $COMPARISON_BIN_DIR 2>/dev/null)" ]; then
+        echo -e "${YELLOW}⚠ Comparison test binaries not found${NC}"
         
-        # If --all was specified, try to build it
-        if [ "$RUN_ALL" = true ]; then
-            echo -e "${BLUE}Attempting to setup and build comparison tests...${NC}"
+        # If --all was specified, try to build them
+        if [ "$RUN_ALL" = true ] || [ "$RUN_COMPARISON" = true ]; then
+            echo -e "${BLUE}Setting up upstream comparison...${NC}"
             
-            # Setup upstream comparison
+            # Setup upstream comparison (checkout, build, install)
             if setupUpstreamComparison; then
                 echo -e "${BLUE}Rebuilding with comparison test support...${NC}"
                 
@@ -464,26 +500,31 @@ if [ "$RUN_COMPARISON" = true ]; then
                 COMPARISON_RESULT=0  # Don't fail
             fi
         else
-            echo -e "${YELLOW}  Use --all flag to automatically setup comparison tests${NC}"
-            COMPARISON_RESULT=0  # Don't fail if comparison tests weren't built
+            echo -e "${YELLOW}  Use --comparison or --all flag to setup comparison tests${NC}"
+            COMPARISON_RESULT=0  # Don't fail if not requested
         fi
     fi
     
-    if [ -f "$COMPARISON_TEST_EXE" ]; then
-        echo -e "${YELLOW}Executing: $COMPARISON_TEST_EXE${NC}"
-        echo -e "${BLUE}Note: Some tests may be skipped if dependencies (upstream/OpenCV) are not available${NC}"
-        
-        $COMPARISON_TEST_EXE $TEST_ARGS || COMPARISON_RESULT=$?
-        
-        if [ $COMPARISON_RESULT -eq 0 ]; then
-            echo -e "${GREEN}✓ Comparison tests PASSED${NC}"
+    # Run comparison tests if binaries exist
+    if [ -d "$COMPARISON_BIN_DIR" ] && [ -n "$(ls -A $COMPARISON_BIN_DIR 2>/dev/null)" ]; then
+        if [ -x "$COMPARISON_RUNNER" ]; then
+            echo -e "${YELLOW}Running comparison tests...${NC}"
+            
+            if "$COMPARISON_RUNNER" "$COMPARISON_BIN_DIR"; then
+                echo -e "${GREEN}✓ Comparison tests PASSED${NC}"
+                COMPARISON_RESULT=0
+            else
+                echo -e "${RED}✗ Comparison tests FAILED${NC}"
+                COMPARISON_RESULT=1
+            fi
         else
-            echo -e "${RED}✗ Comparison tests FAILED (exit code: $COMPARISON_RESULT)${NC}"
+            echo -e "${RED}Error: Comparison runner script not found or not executable${NC}"
+            COMPARISON_RESULT=1
         fi
     else
-        echo -e "${YELLOW}⚠ Comparison test executable still not found${NC}"
-        echo -e "${YELLOW}  This is expected if dependencies are not available${NC}"
-        COMPARISON_RESULT=0  # Don't fail if comparison tests couldn't be built
+        echo -e "${YELLOW}⚠ Comparison test binaries not available${NC}"
+        echo -e "${YELLOW}  This is expected if upstream branch is not available${NC}"
+        COMPARISON_RESULT=0  # Don't fail
     fi
 fi
 
