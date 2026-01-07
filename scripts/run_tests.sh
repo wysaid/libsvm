@@ -199,10 +199,10 @@ fi
 
 # Function to setup upstream comparison
 function setupUpstreamComparison() {
-    UPSTREAM_DIR="build/upstream"
+    UPSTREAM_DIR="tests/upstream_libsvm"
     
-    if [ -d "$UPSTREAM_DIR" ] && [ -f "$UPSTREAM_DIR/svm-train" ]; then
-        echo -e "${BLUE}Upstream build already exists at $UPSTREAM_DIR${NC}"
+    if [ -d "$UPSTREAM_DIR" ] && [ -f "$UPSTREAM_DIR/svm.cpp" ]; then
+        echo -e "${BLUE}Upstream source already exists at $UPSTREAM_DIR${NC}"
         return 0
     fi
     
@@ -218,39 +218,34 @@ function setupUpstreamComparison() {
         return 1
     fi
     
-    # Create upstream directory using git worktree
-    echo -e "${BLUE}Creating git worktree for upstream branch...${NC}"
-    mkdir -p build
+    # Create upstream directory
+    echo -e "${BLUE}Extracting upstream branch to $UPSTREAM_DIR...${NC}"
+    rm -rf "$UPSTREAM_DIR"
+    mkdir -p "$UPSTREAM_DIR"
     
-    # Remove existing worktree if it exists but is broken
-    if [ -d "$UPSTREAM_DIR" ]; then
-        git worktree remove "$UPSTREAM_DIR" -f 2>/dev/null || true
-    fi
+    # Use git show to extract files from upstream branch
+    # Get list of files from upstream branch
+    FILES=$(git ls-tree -r --name-only upstream)
     
-    # Add worktree for upstream branch
-    if ! git worktree add "$UPSTREAM_DIR" upstream; then
-        echo -e "${RED}Failed to create upstream worktree${NC}"
-        return 1
-    fi
-    
-    # Build upstream version using original Makefile
-    echo -e "${BLUE}Building upstream LibSVM...${NC}"
-    pushd "$UPSTREAM_DIR" > /dev/null
-    
-    if [ -f "Makefile" ]; then
-        make clean &>/dev/null || true
-        if make -j$(detectCores); then
-            echo -e "${GREEN}✓ Upstream LibSVM built successfully${NC}"
-            popd > /dev/null
-            return 0
-        else
-            echo -e "${RED}✗ Failed to build upstream LibSVM${NC}"
-            popd > /dev/null
-            return 1
+    # Extract each file
+    EXTRACT_COUNT=0
+    for file in $FILES; do
+        # Create directory structure
+        FILE_DIR=$(dirname "$file")
+        mkdir -p "$UPSTREAM_DIR/$FILE_DIR"
+        
+        # Extract file content
+        if git show "upstream:$file" > "$UPSTREAM_DIR/$file" 2>/dev/null; then
+            ((EXTRACT_COUNT++))
         fi
+    done
+    
+    if [ $EXTRACT_COUNT -gt 0 ] && [ -f "$UPSTREAM_DIR/svm.cpp" ]; then
+        echo -e "${GREEN}✓ Upstream LibSVM source extracted ($EXTRACT_COUNT files)${NC}"
+        echo -e "${BLUE}The comparison tests will be built automatically by CMake${NC}"
+        return 0
     else
-        echo -e "${RED}✗ Makefile not found in upstream branch${NC}"
-        popd > /dev/null
+        echo -e "${RED}✗ Failed to extract upstream source${NC}"
         return 1
     fi
 }
@@ -271,6 +266,15 @@ else
         echo -e "${GREEN}🛡️  AddressSanitizer (ASAN) ENABLED for memory error detection${NC}"
     fi
     echo -e "${PURPLE}===============================================${NC}"
+
+    # Setup upstream comparison BEFORE cmake configuration if needed
+    if [ "$BUILD_UPSTREAM" = true ]; then
+        if setupUpstreamComparison; then
+            echo -e "${GREEN}✓ Upstream source ready for build${NC}"
+        else
+            echo -e "${YELLOW}⚠ Upstream comparison setup failed, tests may be skipped${NC}"
+        fi
+    fi
 
     cd "$BUILD_DIR"
 
@@ -302,11 +306,6 @@ else
     cmake --build . --parallel $(detectCores)
 
     cd ..
-    
-    # Setup upstream comparison if needed
-    if [ "$BUILD_UPSTREAM" = true ]; then
-        setupUpstreamComparison || echo -e "${YELLOW}⚠ Upstream comparison setup failed, tests may be skipped${NC}"
-    fi
 fi
 
 # Initialize results

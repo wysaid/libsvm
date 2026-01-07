@@ -151,8 +151,16 @@ if(LIBSVM_BUILD_UPSTREAM_COMPARISON)
         
         target_include_directories(upstream_comparison_tests PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/common
-            ${CMAKE_SOURCE_DIR}/src
+        )
+        
+        # Add upstream include path with higher priority
+        target_include_directories(upstream_comparison_tests BEFORE PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/upstream_libsvm
+        )
+        
+        # Add current src after upstream to avoid conflicts
+        target_include_directories(upstream_comparison_tests PRIVATE
+            ${CMAKE_SOURCE_DIR}/src
         )
         
         target_link_libraries(upstream_comparison_tests PRIVATE

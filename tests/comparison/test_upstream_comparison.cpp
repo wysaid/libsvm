@@ -51,7 +51,7 @@ namespace upstream {
     // Note: This will be available when upstream_libsvm is extracted
     #ifdef UPSTREAM_AVAILABLE
     extern "C" {
-        #include "upstream_libsvm/svm.h"
+        #include "svm.h"  // upstream_libsvm is in include path
     }
     #endif
 }
