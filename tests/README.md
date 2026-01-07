@@ -20,13 +20,42 @@ cmake --build . -j$(nproc)
 
 ## Running Tests
 
-### Run all tests
+### Quick Start with Test Runner Script
+
+The easiest way to run tests is using the provided test runner script:
+
+```bash
+# Run all standard tests (unit + integration + memory)
+./scripts/run_tests.sh
+
+# Run all tests including comparison tests
+./scripts/run_tests.sh --all
+
+# Run specific test categories
+./scripts/run_tests.sh --unit           # Unit tests only
+./scripts/run_tests.sh --integration    # Integration tests only
+./scripts/run_tests.sh --memory         # Memory tests only (with ASAN)
+
+# Filter tests by name pattern
+./scripts/run_tests.sh --filter "Kernel*"
+
+# Enable AddressSanitizer for all tests
+./scripts/run_tests.sh --sanitize
+
+# Show help
+./scripts/run_tests.sh --help
+```
+
+The test runner script automatically builds and runs tests with proper configuration.
+
+### Manual Testing with CTest
+
 ```bash
 cd build
 ctest --output-on-failure
 ```
 
-### Run specific test suites
+### Run specific test suites directly
 ```bash
 # Unit tests only
 ./bin/unit_tests
