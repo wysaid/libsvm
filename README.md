@@ -1,6 +1,8 @@
 # LibSVM - A Library for Support Vector Machines
 
 [![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](COPYRIGHT)
+[![CMake CI](https://github.com/wysaid/libsvm/actions/workflows/cmake-ci.yml/badge.svg)](https://github.com/wysaid/libsvm/actions/workflows/cmake-ci.yml)
+[![Tests](https://github.com/wysaid/libsvm/actions/workflows/tests.yml/badge.svg)](https://github.com/wysaid/libsvm/actions/workflows/tests.yml)
 
 LibSVM is a simple, easy-to-use, and efficient software for SVM classification and regression. It solves C-SVM classification, nu-SVM classification, one-class-SVM, epsilon-SVM regression, and nu-SVM regression. It also provides an automatic model selection tool for C-SVM classification.
 
@@ -15,6 +17,7 @@ This is a modernized fork of LibSVM with the following improvements:
 - **CMake Build System**: Replaced traditional Makefiles with modern CMake (3.16+) for better cross-platform support
 - **Reorganized Structure**: Cleaner directory layout with `src/`, `apps/`, `bindings/`, and `examples/`
 - **Unified Language Bindings**: CMake-based build configuration for Python, Java, and MATLAB bindings
+- **Comprehensive Test Suite**: 193+ unit, integration, and memory tests with CI automation
 - **Removed Precompiled Binaries**: All binaries are now built from source for better security and compatibility
 - **Modern Documentation**: Updated to Markdown format with comprehensive build instructions
 
@@ -26,6 +29,7 @@ For details on changes from the upstream repository, see [docs/FORK.md](docs/FOR
 
 - [Quick Start](#quick-start)
 - [Building with CMake](#building-with-cmake)
+- [Testing](#testing)
 - [Installation](#installation)
 - [Data Format](#data-format)
 - [Command-Line Tools](#command-line-tools)
@@ -92,6 +96,25 @@ The svm-toy example requires Qt5 or Qt6:
 cmake -DLIBSVM_BUILD_EXAMPLES=ON ..
 cmake --build . --target svm-toy
 ```
+
+## Testing
+
+LibSVM includes a comprehensive test suite with 193+ tests covering unit tests, integration tests, and memory tests.
+
+### Build and Run Tests
+
+```bash
+mkdir build && cd build
+cmake -DLIBSVM_BUILD_TESTS=ON ..
+cmake --build .
+ctest --output-on-failure
+```
+
+For more test options and details, see [tests/README.md](tests/README.md).
+
+### Continuous Integration
+
+All tests run automatically on GitHub Actions for Linux, macOS, and Windows. See [.github/WORKFLOWS.md](.github/WORKFLOWS.md) for workflow details.
 
 ## Installation
 

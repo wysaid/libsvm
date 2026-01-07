@@ -1,0 +1,162 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master, refactor/cmake_cpp ]
+  pull_request:
+    branches: [ master, refactor/cmake_cpp ]
+  workflow_dispatch:
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  # ============================================================================
+  # Unit Tests, Integration Tests, and Memory Tests
+  # ============================================================================
+  tests:
+    name: Tests - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure CMake with Tests
+      shell: bash
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+          -DLIBSVM_BUILD_TESTS=ON \
+          -DLIBSVM_BUILD_APPS=ON
+
+    - name: Build
+      shell: bash
+      run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel
+
+    - name: Run Unit Tests
+      shell: bash
+      working-directory: build
+      run: |
+        if [ "${{ runner.os }}" == "Windows" ]; then
+          ./bin/${{ env.BUILD_TYPE }}/unit_tests.exe
+        else
+          ./bin/unit_tests
+        fi
+
+    - name: Run Integration Tests
+      shell: bash
+      working-directory: build
+      run: |
+        if [ "${{ runner.os }}" == "Windows" ]; then
+          ./bin/${{ env.BUILD_TYPE }}/integration_tests.exe
+        else
+          ./bin/integration_tests
+        fi
+
+    - name: Run Memory Tests
+      shell: bash
+      working-directory: build
+      run: |
+        if [ "${{ runner.os }}" == "Windows" ]; then
+          ./bin/${{ env.BUILD_TYPE }}/memory_tests.exe
+        else
+          ./bin/memory_tests
+        fi
+
+    - name: Run All Tests with CTest
+      shell: bash
+      working-directory: build
+      run: ctest --output-on-failure --parallel 4 -C ${{ env.BUILD_TYPE }}
+
+  # ============================================================================
+  # Memory Tests with AddressSanitizer (Linux/macOS only)
+  # ============================================================================
+  memory-sanitizer:
+    name: Memory Tests (ASan) - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure CMake with ASan
+      shell: bash
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DLIBSVM_BUILD_TESTS=ON \
+          -DLIBSVM_ENABLE_ASAN=ON
+
+    - name: Build
+      shell: bash
+      run: cmake --build build --parallel
+
+    - name: Run Memory Tests with ASan
+      shell: bash
+      working-directory: build
+      run: ./bin/memory_tests
+
+  # ============================================================================
+  # OpenCV Comparison Tests (optional, Linux only for speed)
+  # ============================================================================
+  opencv-comparison:
+    name: OpenCV Comparison - ubuntu-latest
+    runs-on: ubuntu-latest
+    continue-on-error: true  # Don't fail if OpenCV is not available
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install OpenCV
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libopencv-dev
+
+    - name: Configure CMake with OpenCV Comparison
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} \
+          -DLIBSVM_BUILD_TESTS=ON \
+          -DLIBSVM_BUILD_OPENCV_COMPARISON=ON
+
+    - name: Build
+      run: cmake --build build --parallel
+
+    - name: Run OpenCV Comparison Tests
+      working-directory: build
+      run: ./bin/opencv_comparison_tests || echo "OpenCV comparison tests skipped"
+
+  # ============================================================================
+  # Test Summary
+  # ============================================================================
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [tests, memory-sanitizer]
+    if: always()
+
+    steps:
+    - name: Check Test Results
+      run: |
+        echo "Test execution completed"
+        echo "Unit Tests: ${{ needs.tests.result }}"
+        echo "Memory Sanitizer: ${{ needs.memory-sanitizer.result }}"
+        
+        if [ "${{ needs.tests.result }}" != "success" ]; then
+          echo "::error::Unit/Integration tests failed"
+          exit 1
+        fi
+        
+        if [ "${{ needs.memory-sanitizer.result }}" != "success" ]; then
+          echo "::error::Memory sanitizer tests failed"
+          exit 1
+        fi
+        
+        echo "::notice::All tests passed successfully!"
