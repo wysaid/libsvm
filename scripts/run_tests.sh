@@ -197,6 +197,64 @@ if [ "$USE_ASAN" = true ]; then
     fi
 fi
 
+# Function to setup upstream comparison
+function setupUpstreamComparison() {
+    UPSTREAM_DIR="build/upstream"
+    
+    if [ -d "$UPSTREAM_DIR" ] && [ -f "$UPSTREAM_DIR/svm-train" ]; then
+        echo -e "${BLUE}Upstream build already exists at $UPSTREAM_DIR${NC}"
+        return 0
+    fi
+    
+    echo ""
+    echo -e "${PURPLE}===============================================${NC}"
+    echo -e "${BLUE}Setting up upstream LibSVM for comparison${NC}"
+    echo -e "${PURPLE}===============================================${NC}"
+    
+    # Check if upstream branch exists
+    if ! git rev-parse --verify upstream &>/dev/null; then
+        echo -e "${YELLOW}⚠ upstream branch not found in repository${NC}"
+        echo -e "${YELLOW}  Comparison tests will be skipped${NC}"
+        return 1
+    fi
+    
+    # Create upstream directory using git worktree
+    echo -e "${BLUE}Creating git worktree for upstream branch...${NC}"
+    mkdir -p build
+    
+    # Remove existing worktree if it exists but is broken
+    if [ -d "$UPSTREAM_DIR" ]; then
+        git worktree remove "$UPSTREAM_DIR" -f 2>/dev/null || true
+    fi
+    
+    # Add worktree for upstream branch
+    if ! git worktree add "$UPSTREAM_DIR" upstream; then
+        echo -e "${RED}Failed to create upstream worktree${NC}"
+        return 1
+    fi
+    
+    # Build upstream version using original Makefile
+    echo -e "${BLUE}Building upstream LibSVM...${NC}"
+    pushd "$UPSTREAM_DIR" > /dev/null
+    
+    if [ -f "Makefile" ]; then
+        make clean &>/dev/null || true
+        if make -j$(detectCores); then
+            echo -e "${GREEN}✓ Upstream LibSVM built successfully${NC}"
+            popd > /dev/null
+            return 0
+        else
+            echo -e "${RED}✗ Failed to build upstream LibSVM${NC}"
+            popd > /dev/null
+            return 1
+        fi
+    else
+        echo -e "${RED}✗ Makefile not found in upstream branch${NC}"
+        popd > /dev/null
+        return 1
+    fi
+}
+
 # Create build directory
 BUILD_DIR="build"
 mkdir -p "$BUILD_DIR"
@@ -244,6 +302,11 @@ else
     cmake --build . --parallel $(detectCores)
 
     cd ..
+    
+    # Setup upstream comparison if needed
+    if [ "$BUILD_UPSTREAM" = true ]; then
+        setupUpstreamComparison || echo -e "${YELLOW}⚠ Upstream comparison setup failed, tests may be skipped${NC}"
+    fi
 fi
 
 # Initialize results
@@ -368,6 +431,45 @@ if [ "$RUN_COMPARISON" = true ]; then
     echo -e "${GREEN}Running Comparison Tests${NC}"
     echo "==============================================="
     
+    # Check if comparison_tests executable exists
+    if [ ! -f "$COMPARISON_TEST_EXE" ]; then
+        echo -e "${YELLOW}⚠ Comparison test executable not found at $COMPARISON_TEST_EXE${NC}"
+        
+        # If --all was specified, try to build it
+        if [ "$RUN_ALL" = true ]; then
+            echo -e "${BLUE}Attempting to setup and build comparison tests...${NC}"
+            
+            # Setup upstream comparison
+            if setupUpstreamComparison; then
+                echo -e "${BLUE}Rebuilding with comparison test support...${NC}"
+                
+                cd "$BUILD_DIR"
+                
+                # Reconfigure with comparison flags
+                CMAKE_FLAGS="-DLIBSVM_BUILD_TESTS=ON -DLIBSVM_BUILD_APPS=ON"
+                CMAKE_FLAGS="$CMAKE_FLAGS -DLIBSVM_BUILD_UPSTREAM_COMPARISON=ON"
+                CMAKE_FLAGS="$CMAKE_FLAGS -DLIBSVM_BUILD_OPENCV_COMPARISON=ON"
+                
+                if [ "$USE_ASAN" = true ]; then
+                    CMAKE_FLAGS="$CMAKE_FLAGS -DLIBSVM_ENABLE_ASAN=ON -DCMAKE_BUILD_TYPE=Debug"
+                else
+                    CMAKE_FLAGS="$CMAKE_FLAGS -DCMAKE_BUILD_TYPE=Release"
+                fi
+                
+                eval cmake .. $CMAKE_FLAGS
+                cmake --build . --parallel $(detectCores)
+                
+                cd ..
+            else
+                echo -e "${YELLOW}⚠ Could not setup upstream comparison${NC}"
+                COMPARISON_RESULT=0  # Don't fail
+            fi
+        else
+            echo -e "${YELLOW}  Use --all flag to automatically setup comparison tests${NC}"
+            COMPARISON_RESULT=0  # Don't fail if comparison tests weren't built
+        fi
+    fi
+    
     if [ -f "$COMPARISON_TEST_EXE" ]; then
         echo -e "${YELLOW}Executing: $COMPARISON_TEST_EXE${NC}"
         echo -e "${BLUE}Note: Some tests may be skipped if dependencies (upstream/OpenCV) are not available${NC}"
@@ -380,9 +482,9 @@ if [ "$RUN_COMPARISON" = true ]; then
             echo -e "${RED}✗ Comparison tests FAILED (exit code: $COMPARISON_RESULT)${NC}"
         fi
     else
-        echo -e "${YELLOW}⚠ Comparison test executable not found at $COMPARISON_TEST_EXE${NC}"
-        echo -e "${YELLOW}  This is expected if --all flag was not used during build${NC}"
-        COMPARISON_RESULT=0  # Don't fail if comparison tests weren't built
+        echo -e "${YELLOW}⚠ Comparison test executable still not found${NC}"
+        echo -e "${YELLOW}  This is expected if dependencies are not available${NC}"
+        COMPARISON_RESULT=0  # Don't fail if comparison tests couldn't be built
     fi
 fi
 
