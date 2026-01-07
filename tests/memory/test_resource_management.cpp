@@ -154,28 +154,11 @@ TEST_F(ResourceManagementTest, CleanupOrderModelFirst) {
     svm_free_and_destroy_model(&model);
 }
 
-TEST_F(ResourceManagementTest, CleanupOrderBuilderFirst) {
-    svm_model* model = nullptr;
-    
-    {
-        auto builder = createLinearlySeperableData(30, 42);
-        svm_problem* prob = builder->build();
-        svm_parameter param = getDefaultParameter(C_SVC, RBF);
-        
-        model = svm_train(prob, &param);
-        // Builder goes out of scope, but model is saved
-    }
-    
-    // Model should still be valid (it copies the data)
-    ASSERT_NE(model, nullptr);
-    
-    // Create a test sample for prediction
-    std::vector<svm_node> test = {{1, 1.0}, {2, 1.0}, {-1, 0}};
-    double pred = svm_predict(model, test.data());
-    EXPECT_TRUE(pred == 1.0 || pred == -1.0);
-    
-    svm_free_and_destroy_model(&model);
-}
+// NOTE: CleanupOrderBuilderFirst test was removed because it was based on
+// incorrect assumptions about libsvm's memory model. svm_train() does NOT
+// copy training data - it stores pointers to prob->x directly. Therefore,
+// the training data must remain valid for the lifetime of the model.
+// This is consistent with upstream libsvm's design (v337).
 
 // ===========================================================================
 // Double-Free Protection Tests
