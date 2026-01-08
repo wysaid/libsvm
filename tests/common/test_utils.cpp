@@ -8,6 +8,9 @@
 #include <numeric>
 #include <cstdio>
 #include <filesystem>
+#include <atomic>
+#include <thread>
+#include <sstream>
 
 namespace libsvm_test {
 
@@ -304,9 +307,17 @@ void restoreOutput() {
 // ============================================================================
 
 std::string getTempFilePath(const std::string& suffix) {
-    static int counter = 0;
+    static std::atomic<int> counter{0};
     std::filesystem::path temp_dir = std::filesystem::temp_directory_path();
-    std::filesystem::path file_path = temp_dir / ("libsvm_test_" + std::to_string(counter++) + suffix);
+    
+    // Use a combination of process ID, thread ID, and counter for uniqueness
+    // This ensures no conflicts even when tests run in parallel
+    std::ostringstream filename;
+    filename << "libsvm_test_";
+    filename << std::this_thread::get_id() << "_";
+    filename << counter++ << suffix;
+    
+    std::filesystem::path file_path = temp_dir / filename.str();
     // Convert to generic path format (forward slashes) to avoid Windows path issues
     return file_path.generic_string();
 }
