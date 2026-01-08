@@ -3024,6 +3024,7 @@ svm_model *svm_load_model(const char *model_file_name)
 		free(model->label);
 		free(model->nSV);
 		free(model);
+		fclose(fp);
 		return NULL;
 	}
 

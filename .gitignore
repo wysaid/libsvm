@@ -2,6 +2,7 @@
 build/
 cmake-build-*/
 out/
+build_*/
 
 # IDE
 .idea/
@@ -78,8 +79,9 @@ range
 *.swo
 
 # CI test artifacts
-ci-test.log
+*.log
 test_project/
 
 # Installation directories
 install/
+dev-docs/

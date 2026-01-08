@@ -35,6 +35,8 @@ option(LIBSVM_BUILD_EXAMPLES "Build example programs (svm-toy)" OFF)
 option(LIBSVM_BUILD_PYTHON "Build Python bindings" OFF)
 option(LIBSVM_BUILD_JAVA "Build Java bindings" OFF)
 option(LIBSVM_BUILD_MATLAB "Build MATLAB/MEX bindings" OFF)
+option(LIBSVM_BUILD_TESTS "Build test suite (requires GoogleTest)" OFF)
+option(LIBSVM_ENABLE_ASAN "Enable AddressSanitizer for memory tests" OFF)
 
 # ============================================================================
 # Compiler Settings
@@ -121,6 +123,12 @@ endif()
 # Language bindings
 add_subdirectory(bindings)
 
+# Test suite
+if(LIBSVM_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
+
 # ============================================================================
 # Installation
 # ============================================================================
@@ -166,7 +174,11 @@ message(STATUS "  Shared library:    ${BUILD_SHARED_LIBS}")
 message(STATUS "  OpenMP:            ${LIBSVM_ENABLE_OPENMP}")
 message(STATUS "  Build apps:        ${LIBSVM_BUILD_APPS}")
 message(STATUS "  Build examples:    ${LIBSVM_BUILD_EXAMPLES}")
+message(STATUS "  Build tests:       ${LIBSVM_BUILD_TESTS}")
 message(STATUS "  Python bindings:   ${LIBSVM_BUILD_PYTHON}")
 message(STATUS "  Java bindings:     ${LIBSVM_BUILD_JAVA}")
 message(STATUS "  MATLAB bindings:   ${LIBSVM_BUILD_MATLAB}")
+if(LIBSVM_BUILD_TESTS)
+    message(STATUS "  AddressSanitizer:  ${LIBSVM_ENABLE_ASAN}")
+endif()
 message(STATUS "")
